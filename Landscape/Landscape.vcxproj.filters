@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="nh3api">
+      <UniqueIdentifier>{c998ae3e-d361-405b-a213-cafb81c056d8}</UniqueIdentifier>
+      <Extensions>hpp</Extensions>
+    </Filter>
+    <Filter Include="nh3api\core">
+      <UniqueIdentifier>{283850e6-66ae-4906-830a-59c3e6662fb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nh3api\core\nh3api_std">
+      <UniqueIdentifier>{4227435d-e454-4ec1-8501-168ac6c1127b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nh3api\core\nh3api_std\type_traits">
+      <UniqueIdentifier>{a50789e1-83fb-465a-8464-c77aabcbc884}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nh3api\core\interface">
+      <UniqueIdentifier>{654d28e1-fbc0-4181-a8cc-7569ec6963d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nh3api\core\resources">
+      <UniqueIdentifier>{be1d4065-6478-4804-af19-8a79f97d0db8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game_mod">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;h;hpp</Extensions>
+    </Filter>
+    <Filter Include="dll">
+      <UniqueIdentifier>{67618eb3-f322-4826-91ad-cfb6c1434779}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game_mod\asm_helper.h">
+      <Filter>game_mod</Filter>
+    </ClInclude>
+    <ClInclude Include="game_mod\battlefield.h">
+      <Filter>game_mod</Filter>
+    </ClInclude>
+    <ClInclude Include="game_mod\img_loader.h">
+      <Filter>game_mod</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>dll</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="game_mod\battlefield.cpp">
+      <Filter>game_mod</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\img_loader.cpp">
+      <Filter>game_mod</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>dll</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Landscape.rc">
+      <Filter>dll</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

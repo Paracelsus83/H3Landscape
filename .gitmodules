@@ -1,0 +1,3 @@
+[submodule "NH3API"]
+	path = NH3API
+	url = https://github.com/void2012/NH3API.git
