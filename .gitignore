@@ -1,0 +1,12 @@
+.vs/
+CMakeFiles/
+Debug/
+Release/
+LodBuild/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+Makefile
+*.aps
+*.lib
+*.exe

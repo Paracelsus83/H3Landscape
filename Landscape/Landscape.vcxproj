@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{9020E824-A738-4B61-ADEE-51E16E3C2EC2}</ProjectGuid>
+    <RootNamespace>Landscape</RootNamespace>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Label="UserMacros">
+    <H3InstallationPath>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0@AppPath)</H3InstallationPath>
+    <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0@AppPath)</H3InstallationPath>
+    <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\HotA + HD_is1@Inno Setup: App Path)</H3InstallationPath>
+    <AddonInstallationPath Condition="'$(H3InstallationPath)'!=''">$(H3InstallationPath)\_HD3_Data\Packs\$(TargetName)</AddonInstallationPath>
+    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp</BuildLodCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(H3InstallationPath)==''">
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(SolutionDir)NH3API;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions>/Zc:__cplusplus /Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Condition="'$(Configuration)'=='Debug'">
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Condition="'$(Configuration)'=='Release'">
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <Link Condition="'$(Configuration)'=='Release'">
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+    <CustomBuildStep>
+      <Command>$(BuildLodCommand) || ..\dwl_mmarch.cmd &amp;&amp; $(BuildLodCommand)</Command>
+      <Message>------ Creating $(TargetName).lod archive</Message>
+      <Inputs>
+img/CmBkCFUg.bmp;
+img/CmBkDesUg.bmp;
+img/CmBkDkUg.bmp;
+img/CmBkDrUg.bmp;
+img/CmBkEFUg.bmp;
+img/CmBkFFUg.bmp;
+img/CmBkGrUg.bmp;
+img/CmBkHGUg.bmp;
+img/CmBkLPUg.bmp;
+img/CmBkLkUg.bmp;
+img/CmBkLvUg.bmp;
+img/CmBkMCDk.bmp;
+img/CmBkMCUg.bmp;
+img/CmBkMgUg.bmp;
+img/CmBkRedMt.bmp;
+img/CmBkRghUg.bmp;
+img/CmBkRkUg.bmp;
+img/CmBkSnUg.bmp;
+img/CmBkSwUg.bmp;
+img/SgCFBack.bmp;
+img/SgCFUgBk.bmp;
+img/SgCsUgBk.bmp;
+img/SgDnSfBk.bmp;
+img/SgElUgBk.bmp;
+img/SgFFBack.bmp;
+img/SgFrUgBk.bmp;
+img/SgInUgBk.bmp;
+img/SgNcUgBk.bmp;
+img/SgRkBack.bmp;
+img/SgRkUgBk.bmp;
+img/SgRmUgBk.bmp;
+img/SgStUgBk.bmp;
+img/SgTwUgBk.bmp
+      </Inputs>
+      <Outputs>$(SolutionDir)\LodBuild\$(TargetName).lod</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>
+if not exist "$(AddonInstallationPath)" mkdir "$(AddonInstallationPath)"
+copy "..\$(Configuration)\$(TargetFileName)" "$(AddonInstallationPath)\"
+copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
+      </Command>
+      <Message>------ Copy DLL and LOD to $(AddonInstallationPath)</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="game_mod\asm_helper.h" />
+    <ClInclude Include="game_mod\battlefield.h" />
+    <ClInclude Include="game_mod\img_loader.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="game_mod\battlefield.cpp" />
+    <ClCompile Include="game_mod\img_loader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Landscape.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="BeforeResourceCompile">
+    <Exec Command="git describe --tags --abbrev=4 --always" EchoOff="true" IgnoreExitCode="true" ConsoleToMsBuild="true" StandardErrorImportance="low" StandardOutputImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit"/>
+    </Exec>
+    <Message Importance="High" Text="H3Landscape version: $(VersionFromGit)" />
+    <PropertyGroup>
+      <H3LVersion Condition="$(VersionFromGit.StartsWith('v'))">$(VersionFromGit.Substring(1))</H3LVersion>
+      <H3LVersion Condition="!$(VersionFromGit.StartsWith('v'))">$(VersionFromGit)</H3LVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <ResourceCompile>
+        <PreprocessorDefinitions>_USING_V110_SDK71_;%(PreprocessorDefinitions);H3LANDSCAPE_VERSION=$(H3LVersion)</PreprocessorDefinitions>
+      </ResourceCompile>
+    </ItemGroup>
+  </Target>
+</Project>
