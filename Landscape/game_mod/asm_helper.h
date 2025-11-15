@@ -1,20 +1,21 @@
 #pragma once
 
 
-#define CODE_PATCH static __declspec(naked) __fastcall
+#define ASM_CODE_PATCH static __declspec(naked) void __fastcall
 
-#define PROLOG(arg1, arg2) __asm { \
-    __asm push ebp \
-    __asm mov ebp, esp \
-    __asm sub esp, __LOCAL_SIZE \
-    __asm mov arg1, ecx \
-    __asm mov arg2, esi \
-}
+#define CODE_PATCH static __declspec(noreturn) void __fastcall
 
-#define SET_EBX(retAddr) __asm { mov ebx, retAddr }
+#define GET_FROM_REG(outVar, reg) __asm { mov outVar, reg }
 
-#define EPILOG(retValue, retAddr) __asm { \
+#define SET_EBX(value) __asm { mov ebx, value }
+
+#ifdef _MSC_VER
+#pragma warning(disable:4731)
+#endif
+
+#define PATCH_RETURN(retValue, retAddr) __asm { \
     __asm mov eax, retValue \
+    __asm pop esi \
     __asm mov esp, ebp \
     __asm pop ebp \
     __asm jmp retAddr \

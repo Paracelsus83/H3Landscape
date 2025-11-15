@@ -10,7 +10,7 @@ namespace Addr { // Function and data addresses inside Heroes3.exe
 constexpr uintptr_t FUNC_RANDOM = 0x50C7C0; // "random" function
 
 namespace Bg { // Addresses inside the function getting battlefield background
-    constexpr uintptr_t GET_TOWN_BF_BG = 0x4642C8;
+    constexpr uintptr_t GET_TOWN_BF_BG = 0x4642BE;
     constexpr uintptr_t GET_AREA_BF_BG = 0x4642DA;
     constexpr uintptr_t STD_BF_BG = 0x46431E;
     constexpr uintptr_t END_OF_FUNC = 0x46435E;
@@ -89,14 +89,17 @@ const CStrPtr TownBfUndBackgr[kNumTowns] = {
 };
 
 
-CStrPtr CODE_PATCH GetTownBfBackgr(TTownType tt, combatManager* cm) {
-    const char* bgStrPtr;
-    bool underground;
+CODE_PATCH GetTownBfBackgr(combatManager* cm) {
+/* input:
+    ECX: address of combatManager object - cm
+    EAX: fortification level - fortLvl
+*/
+    TFortificationLevel fortLvl;
+    GET_FROM_REG(fortLvl, eax);
 
-    PROLOG(tt, cm);
-
-    bgStrPtr = nullptr;
-    underground = (cm->map_point.z != 0);
+    const TTownType tt = TTownType(cm->combatTown->townType);
+    const bool underground = (cm->map_point.z != 0);
+    CStrPtr bgStrPtr = nullptr;
 
     switch (cm->magic_terrain) {
 
@@ -131,13 +134,15 @@ CStrPtr CODE_PATCH GetTownBfBackgr(TTownType tt, combatManager* cm) {
                 MagicBfUndBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS] : H3MagicBfBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS];
         }
         break;
+    default:
+        break;
     }
 
     if (bgStrPtr == nullptr) {
         bgStrPtr = (underground ? TownBfUndBackgr : H3TownBfBackgr)[tt];
     }
 
-    EPILOG(bgStrPtr, Addr::Bg::END_OF_FUNC);
+    PATCH_RETURN(bgStrPtr, Addr::Bg::END_OF_FUNC);
 }
 
 
@@ -234,13 +239,15 @@ static bool IsNearWater(type_point mapPoint) {
 }
 
 
-CStrPtr CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
-    const char* bgStrPtr;
-    bool underground;
+CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
+/* input:
+    ECX: type of magic terrain - mt
+    ESI: address of combatManager object - cm
+*/
+    GET_FROM_REG(cm, esi);
 
-    PROLOG(mt, cm);
-
-    underground = (cm->map_point.z != 0);
+    CStrPtr bgStrPtr;
+    const bool underground = (cm->map_point.z != 0);
 
     if (cm->Heroes[0]->flags & HF_ISINBOAT) {
         const hero* enemyHero = cm->Heroes[1];
@@ -286,11 +293,11 @@ CStrPtr CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
     else { // Go to standard H3 procedure for non-magic terrain
         SET_EBX(Addr::Bg::STD_BF_BG);
     }
-    EPILOG(bgStrPtr, ebx);
+    PATCH_RETURN(bgStrPtr, ebx);
 }
 
 
-void CODE_PATCH Obstacles_HeroOnBoat() {
+ASM_CODE_PATCH Obstacles_HeroOnBoat() {
 /* input:
     ECX:   address of second hero object
     FlagE: address of second hero is NULL
@@ -339,14 +346,15 @@ void BattleBackgroundPatch(PatcherInstance & p) {
 <- the HDmod code returns to that address
 004642BA    test        eax,eax         * EAX is the level of the town walls
 004642BC    jle         004642D4        * If there are no wals, go to CHECK_MAGIC_TERRAIN
-004642BE    mov         eax,dword ptr [esi+53C8h]   * EAX = address of the town object
-004642C4    movsx       ecx,byte ptr [eax+4]        * ECX = town type
 
 Addr::Bg::GET_TOWN_BF_BG:
-004642C8    code patch here --> jump to function GetTownBfBackgr
-* original instructions:
-* 004642C8  mov         eax,dword ptr [ecx*4+63D2A0h]
-* 004642CF  jmp         0046435E        -> go to Addr::END_OF_FUNC
+004642BE    code patch here --> jump to function GetTownBfBackgr
+* original instruction:
+* 004642BE  mov         eax,dword ptr [esi+53C8h]   * EAX = address of the town object
+
+004642C4    movsx       ecx,byte ptr [eax+4]        * ECX = town type
+004642C8    mov         eax,dword ptr [ecx*4+63D2A0h]
+004642CF    jmp         0046435E        -> go to Addr::END_OF_FUNC
 
 CHECK_MAGIC_TERRAIN:
 004642D4    mov         ecx,dword ptr [esi+53C0h]   * ECX = magic terrain type
