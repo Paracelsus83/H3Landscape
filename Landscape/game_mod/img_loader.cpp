@@ -12,20 +12,32 @@ namespace ImgLdrAddr {
     constexpr uintptr_t FUNC_FIND_IN_LOD = 0x4FB100;
 }
 
+namespace FuncAddr {
+    constexpr uintptr_t LODFILE_OPEN = 0x4FAF30;
+}
+
 
 static char fullLodPath[MAX_PATH];
 static LODFile bgLodFile;
 
 
 static void __declspec(naked) CheckBgLodFile() {
-    if (!bgLodFile.fileptr) {
-        bgLodFile.open(fullLodPath, 1);
-        _asm {
-            test eax, eax
-            jne fail_end
-        }
-    }
     __asm {
+        cmp  dword ptr[bgLodFile], 0 // check if bgLodFile is opened
+        jne  search
+        // if not, call bgLodFile.open(fullLodPath, 1);
+        push 1
+#ifdef __clang__
+        mov  ecx, OFFSET fullLodPath
+		push ecx // workaround for clang bug
+#else
+        push OFFSET fullLodPath
+#endif
+        mov  ecx, OFFSET bgLodFile
+        call FuncAddr::LODFILE_OPEN
+        test eax, eax
+        jne fail_end
+    search:
         mov  esi, OFFSET bgLodFile
         mov  ecx, esi
         call ImgLdrAddr::FUNC_FIND_IN_LOD
