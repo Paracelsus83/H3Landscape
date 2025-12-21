@@ -8,7 +8,7 @@
 #define SUBLANG_NEUTRAL                 0x00
 
 #ifndef H3L_DLL_VERSION
-#define H3L_DLL_VERSION 0,0,1,0
+#define H3L_DLL_VERSION 0,0,2,0
 #endif
 
 #ifdef _DEBUG

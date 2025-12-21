@@ -13,14 +13,17 @@
     <ClInclude Include="game_mod\asm_helper.h">
       <Filter>game_mod</Filter>
     </ClInclude>
-    <ClInclude Include="game_mod\battlefield.h">
+    <ClInclude Include="game_mod\battlefield.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
-    <ClInclude Include="game_mod\img_loader.h">
+    <ClInclude Include="game_mod\img_loader.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>dll</Filter>
+    </ClInclude>
+    <ClInclude Include="game_mod\hota_terrain.hpp">
+      <Filter>game_mod</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,3 +10,4 @@ Makefile
 *.aps
 *.lib
 *.exe
+*.user

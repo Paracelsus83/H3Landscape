@@ -2,6 +2,56 @@
 
 All notable changes to the **H3Landscape** project will be documented in this file.
 
+
+## [0.0.2] - 2025-12-25
+
+### Added game files
+- new images (pcx files in Landscape.lod archive):
+  - background images of underground battlefields:
+    - `CmBkCstUg.pcx` - sandy coast,
+    - `CmBkFGrUg.pcx` - fairy grass - underground equivalent of highlands,
+    - `CmBkWlUg.pcx` - wasteland;
+  - background images of underground battlefields on magical terrains:
+    - `CmBkDunUg.bmp` - dunes,
+    - `CmBkFGUg.bmp` - fields of glory,
+    - `CmBkIceUg.bmp` - cracked ice;
+  - background images of the siege battlefield:
+    - `SgCurBack.pcx` - Necropolis/Dungeon/Stronghold/Conflux on cursed ground (surface),
+    - `SgCvUgBk.pcx` - Cove in the underground,
+    - `SgFaUgBk.pcx` - Factory in the underground;
+  - images of the moat on the battlefield:
+    - `SgCFMoat.pcx` - Stronghold moat in the clover field,
+    - `SgDnCGMlip.pcx` - Dungeon moat lip on cursed ground,
+    - `SgDnRkMlip.pcx` - Dungeon moat lip on rockland,
+    - `SgFaMoatUg.pcx` - Factory moat in the underground;
+- images modified compared to version 0.0.1:
+  - `SgElUgBk.pcx` - siege of the Conflux in the underground (adjustment to HotA),
+  - `SgCFBack.pcx` - siege on the clover field on the surface (corrected),
+  - `SgCFUgBk.pcx` - siege on the clover field in the underground (corrected).
+
+### Game modification
+- Added support for towns and terrain types from Horn of the Abyss,
+- Changed algorithm for determining the battlefield background:
+  - If the battle takes place underground, but not in a mine or cave, and directly borders on water, then:
+    - {for HotA} if the terrain type is not “subterranean”, then the “underground sandy coast” battlefield background (`CmBkCstUg.pcx`) is used,
+	- in other cases - as in version 0.0.1 - the “subterranean shore” battlefield background (`CmBkLkUg.pcx`) is used;
+  - The following battlefield backgrounds are used during town sieges:
+    - Cove - original HotA Cove background [surface], `SgCvUgBk.pcx` [underground],
+    - Factory - original HotA Factory background [surface], `SgFaUgBk.pcx` [underground],
+	  - in the underground, `SgFaMoatUg.pcx` is used as a moat image;
+  - If the siege takes place on magical terrain, then the following battlefield backgrounds are used:
+    - on the cursed ground, for Necropolis/Dungeon/Stronghold/Conflux or any town with a fort, except for the Tower - `SgCurBack.pcx` [surface], `SgStUgBk.pcx` [underground]
+	  - for Dungeon, `SgDnCGMlip.pcx` is used as a moat lip image,
+	- in the evil fog, for any town with a fort, except for the Tower - original H3 “evil fog” background [surface], `CmBkEFUg.pcx` [underground]
+	- on the clover field, for Castle/Rampart/Stronghold/Fortress/Conflux/Cove - `SgCFBack.pcx` [surface], `SgCFUgBk.pcx` [underground],
+	  - for Stronghold, `SgCFMoat.pcx` is used as a moat image,
+	- on the rockland, for Castle/Inferno/Necropolis/Dungeon/Conflux/Cove - `SgRkBack.pcx` [surface], `SgRkUgBk.pcx` [underground],
+	  - for Dungeon, `SgDnRkMlip.pcx` is used as a moat lip image.
+
+### Build system
+- Added `CMakeLists.txt` file to enable building `Landscape.dll` and `Landscape.lod` using cmake.
+
+
 ## [0.0.1] - 2025-11-01
 
 ### Added components
@@ -72,8 +122,8 @@ All notable changes to the **H3Landscape** project will be documented in this fi
     - Necropolis/Stronghold/Conflux on cursed ground - original H3 Stronghold background [surface], `SgStUgBk.pcx` [underground]
     - Castle/Rampart/Fortress/Conflux on clover field - `SgCFBack.pcx` [surface], `SgCFUgBk.pcx` [underground],
     - Inferno on fiery fields - `SgFFBack.pcx` [surface and underground],
-    - Castle/Inferno/Necropolis/Conflux on rockland: `SgRkBack.pcx` [surface], `SgRkUgBk.pcx` [underground],
-    - Tower on magic clouds - original H3 "magic clounds" background [surface], `CmBkMCUg.pcx` [underground],
+    - Castle/Inferno/Necropolis/Conflux on rockland - `SgRkBack.pcx` [surface], `SgRkUgBk.pcx` [underground],
+    - Tower on magic clouds - original H3 “magic clounds” background [surface], `CmBkMCUg.pcx` [underground],
     - all underground towns not listed above - `Sg##UgBg.pcx` (## is town code).
 - Changed algorithm for selecting obstacles on the battlefield:
   - During naval battles in magical terrains, obstacles matching the boat's deck are displayed (instead of obstacles matching the magical terrain).

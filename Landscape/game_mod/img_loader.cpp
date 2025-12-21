@@ -54,7 +54,7 @@ static void __declspec(naked) CheckBgLodFile() {
 
 
 void ImgLoaderPatch(PatcherInstance& p, HMODULE hModule) {
-	const char defaultLodPath[] = "_HD3_Data\\Packs\\Backgrounds\\Backgrounds.lod";
+	const char defaultLodPath[] = "_HD3_Data\\Packs\\Landscape\\Landscape.lod";
 
     size_t pathLen = GetModuleFileName(hModule, fullLodPath, sizeof(fullLodPath));
 

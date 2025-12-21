@@ -27,7 +27,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <PropertyGroup Label="UserMacros">
@@ -77,13 +76,18 @@
       <Message>------ Creating $(TargetName).lod archive</Message>
       <Inputs>
 img/CmBkCFUg.bmp;
+img/CmBkCstUg.bmp;
 img/CmBkDesUg.bmp;
 img/CmBkDkUg.bmp;
 img/CmBkDrUg.bmp;
+img/CmBkDunUg.bmp;
 img/CmBkEFUg.bmp;
 img/CmBkFFUg.bmp;
+img/CmBkFGUg.bmp;
+img/CmBkFGrUg.bmp;
 img/CmBkGrUg.bmp;
 img/CmBkHGUg.bmp;
+img/CmBkIceUg.bmp;
 img/CmBkLPUg.bmp;
 img/CmBkLkUg.bmp;
 img/CmBkLvUg.bmp;
@@ -95,12 +99,20 @@ img/CmBkRghUg.bmp;
 img/CmBkRkUg.bmp;
 img/CmBkSnUg.bmp;
 img/CmBkSwUg.bmp;
+img/CmBkWlUg.bmp;
 img/SgCFBack.bmp;
+img/SgCFMoat.bmp;
 img/SgCFUgBk.bmp;
 img/SgCsUgBk.bmp;
+img/SgCurBack.bmp;
+img/SgCvUgBk.bmp;
+img/SgDnCGMlip.bmp;
+img/SgDnRkMlip.bmp;
 img/SgDnSfBk.bmp;
 img/SgElUgBk.bmp;
 img/SgFFBack.bmp;
+img/SgFaMoatUg.bmp;
+img/SgFaUgBk.bmp;
 img/SgFrUgBk.bmp;
 img/SgInUgBk.bmp;
 img/SgNcUgBk.bmp;
@@ -123,8 +135,9 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="game_mod\asm_helper.h" />
-    <ClInclude Include="game_mod\battlefield.h" />
-    <ClInclude Include="game_mod\img_loader.h" />
+    <ClInclude Include="game_mod\battlefield.hpp" />
+    <ClInclude Include="game_mod\hota_terrain.hpp" />
+    <ClInclude Include="game_mod\img_loader.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +151,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="BeforeResourceCompile">
     <Exec Command="git describe --tags --abbrev=4 --always" EchoOff="true" IgnoreExitCode="true" ConsoleToMsBuild="true" StandardErrorImportance="low" StandardOutputImportance="low">
-      <Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit"/>
+      <Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit" />
     </Exec>
     <Message Importance="High" Text="H3Landscape version: $(VersionFromGit)" />
     <PropertyGroup>

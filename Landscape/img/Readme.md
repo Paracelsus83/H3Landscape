@@ -8,8 +8,11 @@
 ![](CmBkSnUg.bmp "Snow")
 ![](CmBkSwUg.bmp "Swamp")
 ![](CmBkRghUg.bmp "Rough")
-![](CmBkLkUg.bmp "Subterranean Lake")
 ![](CmBkLvUg.bmp "Lava")
+![](CmBkFGrUg.bmp "Fairy Grass")
+![](CmBkWlUg.bmp "Wasteland")
+![](CmBkCstUg.bmp "Sandy Coast")
+![](CmBkLkUg.bmp "Subterranean Lake")
 
 ## Background of the battlefield on the surface - "Red Rocks"
 Displayed when the battlefield is on the surface, but the terrain type is “subterranean” (native terrain for Dungeon)
@@ -26,6 +29,10 @@ Displayed when the battlefield is on the surface, but the terrain type is “sub
 ![](CmBkFFUg.bmp "Fiery Fields")
 ![](CmBkRkUg.bmp "Rockland")
 ![](CmBkMCUg.bmp "Magic Clouds")
+![](CmBkIceUg.bmp "Cracked Ice")
+![](CmBkDunUg.bmp "Dunes")
+![](CmBkFGUg.bmp "Fields of Glory")
+
 
 ## Backgrounds of battlefields on boats
 
@@ -42,6 +49,8 @@ Displayed when the battlefield is on the surface, but the terrain type is “sub
 ![](SgStUgBk.bmp "Stronghold")
 ![](SgFrUgBk.bmp "Fortress")
 ![](SgElUgBk.bmp "Conflux")
+![](SgCvUgBk.bmp "Cove")
+![](SgFaUgBk.bmp "Factory")
 
 ## Background of the battlefield in the Dungeon on the surface
 
@@ -49,8 +58,9 @@ Displayed when the battlefield is on the surface, but the terrain type is “sub
 
 ## Backgrounds of battlefields in towns located in magical terrains
 
-![](SgCFBack.bmp "Castle, Rampart, Fortress, Conflux - Clover Field")
-![](SgCFUgBk.bmp "Castle, Rampart, Fortress, Conflux - Clover Field (undegrround)")
+![](SgCurBack.bmp "Necropolis, Dungeon, Stronghold, Conflux - Cursed Ground")
+![](SgCFBack.bmp "Castle, Rampart, Stronghold, Fortress, Conflux, Cove - Clover Field")
+![](SgCFUgBk.bmp "Castle, Rampart, Stronghold, Fortress, Conflux, Cove - Clover Field (undegrround)")
 ![](SgRkBack.bmp "Castle, Inferno, Necropolis, Conflux - Rockland")
 ![](SgRkUgBk.bmp "Castle, Inferno, Necropolis, Conflux - Rockland (undegrround)")
 ![](SgFFBack.bmp "Inferno - Fiery Fields")
