@@ -5,6 +5,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ## [0.0.2] - 2025-12-25
 
+### Added components
+- `H3L_HotA_Patcher.exe` - tool for integrating the H3Landscape add-on with Horn of the Abyss.
+
 ### Added game files
 - new images (pcx files in Landscape.lod archive):
   - background images of underground battlefields:

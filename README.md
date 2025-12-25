@@ -18,7 +18,8 @@ First and foremost, it adds a lot of new images of underground battlefields.
 
 You can download the H3Landscape plugin installer from the [Last release](https://github.com/Paracelsus83/H3Landscape/releases/latest). \
 The installer `H3Landscape.msi` should automatically find the location of the installed “Heroes of Might & Magic III” game. If it does not, you have to specify the folder where the game is located.\
-After installing the plugin, run `HD_Launcher.exe` and add “Landscape” to the list of plugins.
+After installing the plugin, run `HD_Launcher.exe` and add “Landscape” to the list of plugins. \
+To run Horn of the Abyss with the H3Landscape add-on, use the `H3HotA_HD_L.exe` file.
 
 ## Build
 To build the H3Landscape plugin, you need Microsoft Visual Studio 2022 with the following components installed:

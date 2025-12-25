@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Landscape", "Landscape\Landscape.vcxproj", "{9020E824-A738-4B61-ADEE-51E16E3C2EC2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Patcher", "Patcher\Patcher.vcxproj", "{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}"
+EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{52B20422-474D-5734-629F-99A1F7DE9787}"
 EndProject
 Global
@@ -17,6 +19,8 @@ Global
 		{9020E824-A738-4B61-ADEE-51E16E3C2EC2}.Debug|x86.Build.0 = Debug|Win32
 		{9020E824-A738-4B61-ADEE-51E16E3C2EC2}.Release|x86.ActiveCfg = Release|Win32
 		{9020E824-A738-4B61-ADEE-51E16E3C2EC2}.Release|x86.Build.0 = Release|Win32
+		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Debug|x86.ActiveCfg = Debug|Win32
+		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Release|x86.ActiveCfg = Release|Win32
 		{52B20422-474D-5734-629F-99A1F7DE9787}.Debug|x86.ActiveCfg = Release
 		{52B20422-474D-5734-629F-99A1F7DE9787}.Release|x86.ActiveCfg = Release
 	EndGlobalSection

@@ -1,3 +1,7 @@
 [submodule "NH3API"]
 	path = NH3API
 	url = https://github.com/void2012/NH3API.git
+[submodule "Patcher/AT4RE_Lib"]
+	path = Patcher/AT4RE_Lib
+	url = https://github.com/Paracelsus83/AT4RE_Lib
+	branch = main
