@@ -57,11 +57,11 @@
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Debug'">
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Release'">
       <DebugInformationFormat>None</DebugInformationFormat>
-      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,6 +100,7 @@ img/CmBkRkUg.bmp;
 img/CmBkSnUg.bmp;
 img/CmBkSwUg.bmp;
 img/CmBkWlUg.bmp;
+img/SgBwUgBk.bmp;
 img/SgCFBack.bmp;
 img/SgCFMoat.bmp;
 img/SgCFUgBk.bmp;

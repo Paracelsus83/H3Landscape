@@ -51,6 +51,7 @@ Displayed when the battlefield is on the surface, but the terrain type is “sub
 ![](SgElUgBk.bmp "Conflux")
 ![](SgCvUgBk.bmp "Cove")
 ![](SgFaUgBk.bmp "Factory")
+![](SgBwUgBk.bmp "Bulwark")
 
 ## Background of the battlefield in the Dungeon on the surface
 

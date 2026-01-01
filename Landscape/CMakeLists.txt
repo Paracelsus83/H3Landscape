@@ -90,6 +90,7 @@ set(IMAGE_FILES
 	img/CmBkSnUg.bmp
 	img/CmBkSwUg.bmp
 	img/CmBkWlUg.bmp
+	img/SgBwUgBk.bmp
 	img/SgCFBack.bmp
 	img/SgCFMoat.bmp
 	img/SgCFUgBk.bmp

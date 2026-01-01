@@ -16,3 +16,6 @@ constexpr uint32_t MAX_HOTA_MAGIC_TERRAINS = 14;
 
 constexpr TTownType eTownCove = static_cast<TTownType>(9);
 constexpr TTownType eTownFactory = static_cast<TTownType>(10);
+constexpr TTownType eTownBulwark = static_cast<TTownType>(11);
+
+constexpr uint32_t MAX_HOTA_TOWN_TYPES = 12;

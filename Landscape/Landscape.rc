@@ -51,7 +51,7 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "compatible with HoMM3 Complete and Horn of the Abyss"
+            VALUE "Comments", "compatible with HoMM3 Complete and Horn of the Abyss 1.8.0"
             VALUE "CompanyName", "Paracelsus83"
             VALUE "FileDescription", "Addon for HoMM3 HD+"
             VALUE "InternalName", "HD.Plugin.Landscape"

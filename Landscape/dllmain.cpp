@@ -1,5 +1,4 @@
 #include <nh3api/hd_mod.hpp>
-#include <nh3api/core/nh3api_std/patcher_x86.hpp>
 #include "game_mod/battlefield.hpp"
 #include "game_mod/img_loader.hpp"
 

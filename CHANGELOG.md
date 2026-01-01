@@ -3,6 +3,23 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.0.3] - 2026-01-01
+
+### Added game files
+- new image (pcx file in Landscape.lod archive):
+  - `SgBwUgBk.pcx` - background of the underground battlefield in Bulwark.
+
+### Game modification
+- Added support for Horn of the Abyss 1.8.0,
+- Changed algorithm for determining the battlefield background:
+  - The image `SgBwUgBk.pcx` is used as background during the siege of the Bulwark in the underground,
+  - For battles in water objects located on land:
+    - Beholders' Sanctuary - the image `CmBkSwUg.pcx` is used as the background,
+    - Temple of the Sea - depending on the type of terrain on which it stands - the underground version of the background is used;
+  - If the battle takes place in Cyclops Stockpile on the surface, on grass or snow terrain, the image `CmBkDrUg.pcx` is used as the background,
+  - Changing the battlefield background in creature banks (e.g. Cyclops Stockpile) does not change the terrain type that is taken into account when determining creature movement bonuses.
+
+
 ## [0.0.2] - 2025-12-25
 
 ### Added components
@@ -27,7 +44,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
     - `SgDnCGMlip.pcx` - Dungeon moat lip on cursed ground,
     - `SgDnRkMlip.pcx` - Dungeon moat lip on rockland,
     - `SgFaMoatUg.pcx` - Factory moat in the underground;
-- images modified compared to version 0.0.1:
+- battlefield background images modified compared to version 0.0.1:
   - `SgElUgBk.pcx` - siege of the Conflux in the underground (adjustment to HotA),
   - `SgCFBack.pcx` - siege on the clover field on the surface (corrected),
   - `SgCFUgBk.pcx` - siege on the clover field in the underground (corrected).

@@ -105,7 +105,7 @@ CStrPtr const UndergrLakeBfBackgr = "CmBkLkUg.pcx";
 CStrPtr const MagicCloudBoatBackgr = "CmBkMCDk.pcx";
 
 /* Backgrounds of town battlefields */
-const CStrPtr TownBfBackgr[11] = {
+const CStrPtr TownBfBackgr[MAX_HOTA_TOWN_TYPES] = {
     /* eTownCastle     */ StrAddr(0x66d1E8),
     /* eTownRampart    */ StrAddr(0x66d1D8),
     /* eTownTower      */ StrAddr(0x66d1C8),
@@ -116,11 +116,12 @@ const CStrPtr TownBfBackgr[11] = {
     /* eTownFortress   */ StrAddr(0x66d178),
     /* eTownConflux    */ StrAddr(0x66d168),
     /* eTownCove       */ "SgCvBack.pcx",
-    /* eTownFactory    */ "SgFaBack.pcx"
+    /* eTownFactory    */ "SgFaBack.pcx",
+    /* eTownBulwark    */ "SgBuBack.pcx"
 };
 
 /* Backgrounds of underground town battlefields */
-const CStrPtr TownBfUndBackgr[11] = {
+const CStrPtr TownBfUndBackgr[MAX_HOTA_TOWN_TYPES] = {
     /* eTownCastle     */ "SgCsUgBk.pcx",
     /* eTownRampart    */ "SgRmUgBk.pcx",
     /* eTownTower      */ "SgTwUgBk.pcx",
@@ -131,7 +132,8 @@ const CStrPtr TownBfUndBackgr[11] = {
     /* eTownFortress   */ "SgFrUgBk.pcx",
     /* eTownConflux    */ "SgElUgBk.pcx",
     /* eTownCove       */ "SgCvUgBk.pcx",
-    /* eTownFactory    */ "SgFaUgBk.pcx"
+    /* eTownFactory    */ "SgFaUgBk.pcx",
+    /* eTownBulwark    */ "SgBwUgBk.pcx"
 };
 
 namespace Fort {
@@ -250,24 +252,31 @@ static bool IsCave(const combatManager* cm) {
 }
 
 
-static int32_t CaveTerrain(const combatManager* cm) {
+static int32_t CaveTerrain(combatManager* cm) {
     switch (cm->Heroes[0]->type) {
 
     case OBJECT_CREATURE_BANK:
         // Creature bank type == 0 means Cyclops Stockpile
-        if (cm->EventCell->objectIndex == 0) {
-            const int32_t tt = cm->combatTerrain;
-            // If terrain type is Grass or Snow, change it to Rough
-            return (tt == eTerrainGrass || tt == eTerrainSnow) ? eTerrainRough : tt;
+        switch (cm->EventCell->objectIndex) {
+        case 0: // Cyclops Stockpile
+            if (const int32_t tt = cm->combatTerrain; tt == eTerrainGrass || tt == eTerrainSnow) {
+                return eTerrainDirt; // If terrain type is Grass or Snow, use the Dirt background
+            }
+            else return tt;
+        case 0x15: // Beholders' Sanctuary
+            return eTerrainSwamp;
+        case 0x16: // Temple of the Sea
+            return cm->EventCell->GroundSet;
         }
         break;
 
     case OBJECT_CREATURE_GENERATOR1:
         // Creature generator types: 1 means Behemoth Crag, 9 means Cyclops Cave
         if (int16_t genType = cm->EventCell->objectIndex; genType == 1 || genType == 9) {
-            const int8_t tt = cm->EventCell->GroundSet;
-            // If terrain type is Grass or Snow, change it to Rough
-            return (tt == eTerrainGrass || tt == eTerrainSnow) ? eTerrainRough : tt;
+            int8_t tt = cm->EventCell->GroundSet;
+            // If terrain type is Grass or Snow, change it to the Rough
+            if (tt == eTerrainGrass || tt == eTerrainSnow) { tt = eTerrainRough; };
+            return cm->combatTerrain = tt;
         }
         break;
 
@@ -277,8 +286,9 @@ static int32_t CaveTerrain(const combatManager* cm) {
             return eTerrainSubterranean;
         case CRYSTAL:
         case GOLD:
-            const int8_t tt = cm->EventCell->GroundSet;
-            return (tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainSwamp) ? eTerrainDirt : tt;
+            int8_t tt = cm->EventCell->GroundSet;
+            if (tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainSwamp) { tt = eTerrainDirt; };
+            return cm->combatTerrain = tt;
         }
         break; // case OBJECT_MINE
 
@@ -346,7 +356,6 @@ CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
         bgStrPtr = ((underground || IsCave(cm)) ? MagicBfUndBackgr : MagicBfBackgr)[mt];
     }
     else if (int32_t ctt = CaveTerrain(cm); ctt != eTerrainNone) {
-        cm->combatTerrain = ctt;
         cm->magic_terrain = MAGIC_TERRAIN_INVALID;
         bgStrPtr = BfUndBackgr[ctt];
     }
@@ -394,6 +403,7 @@ CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
     }
     else { // Go to standard H3 procedure for non-magic terrain
         SET_EBX(Addr::Bg::STD_BF_BG);
+        SET_ECX(cm);
     }
     PATCH_RETURN(bgStrPtr, ebx);
 }

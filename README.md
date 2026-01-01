@@ -11,8 +11,10 @@ First and foremost, it adds a lot of new images of underground battlefields.
 ![](Landscape/img/CmBkDrUg.bmp "example: a muddy underground battlefield")
 
 
-- [Full list of changes to the game introduced by this addon](Changelog.md)
+- [Full list of changes to the game introduced by this addon](CHANGELOG.md)
 - [Full list of new battlefield background images](Landscape/img/Readme.md)
+
+Compatible with HoMM3 Complete edition and Horn of the Abyss 1.8.0.
 
 ## Download and installation
 

@@ -8,6 +8,7 @@
 #define GET_FROM_REG(outVar, reg) __asm { mov outVar, reg }
 
 #define SET_EBX(value) __asm { mov ebx, value }
+#define SET_ECX(value) __asm { mov ecx, value }
 
 #ifdef _MSC_VER
 #pragma warning(disable:4731)
