@@ -3,6 +3,18 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.0.4]
+
+### Added game files
+- background images of underground battlefields modified compared to version 0.0.3:
+  - `CmBkDkUg.pcx` - improved boat,
+  - `CmBkCFUg.pcx` - improved clover field,
+  - `CmBkHGUg.pcx` - improved holy ground,
+  - `CmBkMCUg.pcx` - improved magic clouds,
+  - `SgInUgBk.pcx` - improved Inferno siege,
+  - `SgTwUgBk.pcx` - improved Tower siege.
+
+
 ## [0.0.3] - 2026-01-01
 
 ### Added game files
@@ -150,6 +162,6 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ### Build system
 - Added project files for Microsoft Visual Studio 2022:
-  - `H3Landscape.sln` - solution file
-  - `Landscape/Landscape.vcxproj` - project for building Landscape.dll and Landscape.lod
-  - `Installer.vdproj` - project for building H3Landscape.msi
+  - `H3Landscape.sln` - solution file,
+  - `Landscape/Landscape.vcxproj` - project for building Landscape.dll and Landscape.lod,
+  - `Installer.vdproj` - project for building H3Landscape.msi.
