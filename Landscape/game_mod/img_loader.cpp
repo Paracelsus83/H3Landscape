@@ -1,4 +1,5 @@
 #include <nh3api/core/resources/files.hpp>
+#include <nh3api/core/nh3api_std/patcher_x86.hpp>
 
 #include "img_loader.hpp"
 

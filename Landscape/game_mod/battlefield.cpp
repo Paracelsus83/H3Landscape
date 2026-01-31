@@ -1,5 +1,6 @@
 #include <nh3api/core/combat.hpp>
 #include <nh3api/core/global.hpp>
+#include <nh3api/core/nh3api_std/patcher_x86.hpp>
 
 #include "battlefield.hpp"
 #include "asm_helper.h"
@@ -273,7 +274,7 @@ static int32_t CaveTerrain(combatManager* cm) {
     case OBJECT_CREATURE_GENERATOR1:
         // Creature generator types: 1 means Behemoth Crag, 9 means Cyclops Cave
         if (int16_t genType = cm->EventCell->objectIndex; genType == 1 || genType == 9) {
-            int8_t tt = cm->EventCell->GroundSet;
+            TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
             // If terrain type is Grass or Snow, change it to the Rough
             if (tt == eTerrainGrass || tt == eTerrainSnow) { tt = eTerrainRough; };
             return cm->combatTerrain = tt;
@@ -286,7 +287,7 @@ static int32_t CaveTerrain(combatManager* cm) {
             return eTerrainSubterranean;
         case CRYSTAL:
         case GOLD:
-            int8_t tt = cm->EventCell->GroundSet;
+            TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
             if (tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainSwamp) { tt = eTerrainDirt; };
             return cm->combatTerrain = tt;
         }
@@ -375,7 +376,7 @@ CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
         }
     }
     else if (underground) {
-        const int8_t tt = cm->EventCell->GroundSet;
+        const TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
         // When a version other than HotA is running, check whether the field is the coast of an underground sea/lake
         if (!HotAMode && IsNearWater(cm->map_point)) {
             if (tt == eTerrainSubterranean) {
