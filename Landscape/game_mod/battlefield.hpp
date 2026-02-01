@@ -1,4 +1,4 @@
 #pragma once
 
 
-void BattleBackgroundPatch(class PatcherInstance&);
+void BattlefieldPatch(class PatcherInstance&);

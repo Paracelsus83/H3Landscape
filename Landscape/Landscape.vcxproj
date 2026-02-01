@@ -34,7 +34,7 @@
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0@AppPath)</H3InstallationPath>
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\HotA + HD_is1@Inno Setup: App Path)</H3InstallationPath>
     <AddonInstallationPath Condition="'$(H3InstallationPath)'!=''">$(H3InstallationPath)\_HD3_Data\Packs\$(TargetName)</AddonInstallationPath>
-    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp</BuildLodCommand>
+    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp sprites\obstacles\*.def</BuildLodCommand>
   </PropertyGroup>
   <PropertyGroup Condition="$(H3InstallationPath)==''">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -121,7 +121,17 @@ img/SgRkBack.bmp;
 img/SgRkUgBk.bmp;
 img/SgRmUgBk.bmp;
 img/SgStUgBk.bmp;
-img/SgTwUgBk.bmp
+img/SgTwUgBk.bmp;
+sprites/obstacles/ObBDt1Ug.def;
+sprites/obstacles/ObDtS3Ug.def;
+sprites/obstacles/ObDtS4Ug.def;
+sprites/obstacles/ObGMs1Ug.def;
+sprites/obstacles/ObGMs2Ug.def;
+sprites/obstacles/OBSnCrUg.def;
+sprites/obstacles/ObSnRk3U.def;
+sprites/obstacles/ObSnRk5U.def;
+sprites/obstacles/ObSnRk6U.def;
+sprites/obstacles/ObSwMsUg.def
       </Inputs>
       <Outputs>$(SolutionDir)\LodBuild\$(TargetName).lod</Outputs>
     </CustomBuildStep>
@@ -139,12 +149,14 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClInclude Include="game_mod\battlefield.hpp" />
     <ClInclude Include="game_mod\hota_terrain.hpp" />
     <ClInclude Include="game_mod\img_loader.hpp" />
+    <ClInclude Include="game_mod\obstacles.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />
+    <ClCompile Include="game_mod\obstacles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Landscape.rc" />

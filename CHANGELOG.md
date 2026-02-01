@@ -6,6 +6,11 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ## [0.0.4]
 
 ### Added game files
+- new obstacle sprites for the underground battlefield:
+  - `ObBDt1Ug.def`, `ObDtS3Ug.def`, `ObDtS4Ug.def` - rocks on dirt,
+  - `ObGMs1Ug.def`, `ObGMs2Ug.def`, `ObSwMsUg.def` - mushrooms on grass/swamp,
+  - `OBSnCrUg.def` - ice crevasse,
+  - `ObSnRk3U.def`, `ObSnRk5U.def`, `ObSnRk6U.def` - rocks on snow;
 - background images of underground battlefields modified compared to version 0.0.3:
   - `CmBkDkUg.pcx` - improved boat,
   - `CmBkCFUg.pcx` - improved clover field,
@@ -13,6 +18,10 @@ All notable changes to the **H3Landscape** project will be documented in this fi
   - `CmBkMCUg.pcx` - improved magic clouds,
   - `SgInUgBk.pcx` - improved Inferno siege,
   - `SgTwUgBk.pcx` - improved Tower siege.
+
+### Game modification
+- Changed algorithm for selecting obstacles on the battlefield:
+  - For underground battles, some obstacles containing tree trunks are replaced with their underground counterparts.
 
 
 ## [0.0.3] - 2026-01-01

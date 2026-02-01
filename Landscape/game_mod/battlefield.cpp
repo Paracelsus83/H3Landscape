@@ -1,10 +1,10 @@
-#include <nh3api/core/combat.hpp>
 #include <nh3api/core/global.hpp>
 #include <nh3api/core/nh3api_std/patcher_x86.hpp>
 
 #include "battlefield.hpp"
 #include "asm_helper.h"
 #include "hota_terrain.hpp"
+#include "obstacles.hpp"
 
 
 namespace Addr { // Function and data addresses inside Heroes3.exe
@@ -19,17 +19,23 @@ namespace Bg { // Addresses inside the function selecting battlefield background
     constexpr uintptr_t END_OF_FUNC = 0x46435E;
 }
 
+namespace Fort { // Addresses inside the function selecting fortification graphics for the battlefield
+    constexpr uintptr_t IMG_ENTRY = 0x462FC3;
+    constexpr uintptr_t STD_IMG = 0x462FE3;
+    constexpr uintptr_t LOAD_BITMAP = 0x462FF0;
+    constexpr uintptr_t NO_IMAGE = 0x463001;
+    constexpr uintptr_t LOOP_JL_ARG = 0x46300E;
+}
+
 namespace Obst { // Addresses inside the function setting obstacles on the battlefield
     constexpr uintptr_t HERO_ON_BOAT = 0x4662E6;
     constexpr uintptr_t TWO_BOATS = 0x4662F0;
     constexpr uintptr_t STD_PLACEMENT = 0x466387;
 }
 
-namespace Fort { // Addresses inside the function selecting fortification graphics for the battlefield
-    constexpr uintptr_t IMG_ENTRY = 0x462FC3;
-    constexpr uintptr_t STD_IMG = 0x462FE3;
-    constexpr uintptr_t LOAD_BITMAP = 0x462FF0;
-    constexpr uintptr_t NO_IMAGE = 0x463001;
+namespace PlObst { // Addresses inside the function placing one obstacle on the battlefield
+    constexpr uintptr_t GET_INFO = 0x465C25;
+    constexpr uintptr_t AFTER_GET_INFO = 0x465C2B;
 }
 
 namespace Img { // File names of battlefield background images
@@ -410,56 +416,30 @@ CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
 }
 
 
-ASM_CODE_PATCH Obstacles_HeroOnBoat() {
-/* input:
-    ECX: address of second hero object
-    ZF:  address of second hero is NULL
-    EDX: constant - hero flag HF_ISINBOAT
-*/
-    __asm {
-        je OneBoat   // if ECX == 0 (no second hero) => OneBoat
-        test dword ptr[ecx + 0x105], edx // check if the second hero has flag HF_ISINBOAT
-        je OneBoat   // if the second hero is not on the boat => OneBoat
-        jmp Addr::Obst::TWO_BOATS // return to the h3 code - handling two boats
-        
-    OneBoat:
-        mov  edx, 0x0C
-        mov  ecx, 5
-        call Addr::FUNC_RANDOM // get a random number in the range [5..0xC]
-        xor ebx, ebx    // ebx = 0
-        mov  dword ptr[ebp - 0x10], eax // save random number
-        mov  dword ptr[ebp - 0x14], ebx
-        mov  ebx, 0x100 // 1<<8 - water flag
-        jmp  Addr::Obst::STD_PLACEMENT // return to the h3 code
-    }
-}
-
-
 ASM_CODE_PATCH FortSectionImage() {
 /* input
     EBX: number of wall section * 9
-    EDI: number of wall section sprite [0..4]
-    ZF:  EDI == 0
     EDX: constant - 0
     ESI: address of combatManager object
 */
     __asm {
-        jnz  StdImage // if EDI != 0
         cmp  ebx, Fort::Item::MOAT
         je   Moat
         cmp  ebx, Fort::Item::MOAT_LIP
         je   MoatLip
         jmp  Addr::Fort::STD_IMG
     Moat:
-        mov  ecx, dword ptr [Addr::GAME_OBJ_PTR]
-        // If the game is in RoE or AB mode, do not display the moat.
+        cmp  dl, [HotAMode]
+        jne  MoatImg // if the game is HotA, skip checking RoE/AB.
+        mov  ecx, [gpGame]
+        // Check if the game is in RoE or AB mode
         cmp  dword ptr[ecx + 0x1F698], 2
         jge  MoatImg // Jump if iGameType >= Shadow of Death
         mov  eax, dword ptr[esi + 0x53C8]
         cmp  byte ptr[eax + 4], TOWN_STRONGHOLD
-        jne  MoatImg
-        mov [Fort::Img::Moat], edx // = nullptr
-        jmp  Addr::Fort::NO_IMAGE
+        jne  MoatImg // Jump if town type is not Stronghold
+        mov  [Fort::Img::Moat], edx // = nullptr
+        jmp  Addr::Fort::NO_IMAGE // Don't display moat for Stronghold in RoE/AB
     MoatImg:
         mov  ecx, [Fort::Img::Moat]
         jecxz StdImage
@@ -476,11 +456,69 @@ ASM_CODE_PATCH FortSectionImage() {
 }
 
 
-void BattleBackgroundPatch(PatcherInstance & p) {
+ASM_CODE_PATCH Obstacles_HeroOnBoat() {
+/* input:
+    ECX: address of second hero object
+    ZF:  address of second hero is NULL
+    EDX: constant - hero flag HF_ISINBOAT
+*/
+    __asm {
+        je   OneBoat   // if ECX == 0 (no second hero) => OneBoat
+        test dword ptr[ecx + 0x105], edx // check if the second hero has flag HF_ISINBOAT
+        je   OneBoat   // if the second hero is not on the boat => OneBoat
+        jmp  Addr::Obst::TWO_BOATS // return to the h3 code - handling two boats
+        
+    OneBoat:
+        mov  edx, 0x0C
+        mov  ecx, 5
+        call Addr::FUNC_RANDOM // get a random number in the range [5..0xC]
+        xor  ebx, ebx   // ebx = 0
+        mov  dword ptr[ebp - 0x10], eax // save random number
+        mov  dword ptr[ebp - 0x14], ebx
+        mov  ebx, 0x100 // 1<<8 - water flag
+        jmp  Addr::Obst::STD_PLACEMENT // return to the h3 code
+    }
+}
+
+
+ASM_CODE_PATCH Obstacles_GetInfo() {
+/* input:
+    EDI: address of TObstacleInfo object
+    ESI: address of combatManager object
+*/
+    __asm {
+        mov  ecx, dword ptr[ebp - 0x10]    // get combatManager address
+        mov  eax, dword ptr[ecx + 0x13FF0] // get map point
+        test eax, 0x3C000000 // check if underground battle
+        jz End
+        mov  ecx, dword ptr[ebp + 8] // get obstacle ID
+        cmp  ecx, 250
+        jge End
+        mov  cl,  [UndergroundObstaclesMap + ecx]
+        jcxz End
+        lea  eax, [ecx + ecx * 4]
+        lea  edi, [UgObstacleInfos - 20 + eax * 4] // get address of underground obstacle info
+    End:
+        lea  ecx, [ebp - 50h]        // get address of hex_picker
+        mov  dword ptr[ebp + 8], edi // save address of obstacle info
+        jmp  Addr::PlObst::AFTER_GET_INFO
+    }
+}
+
+
+void BattlefieldPatch(PatcherInstance & p) {
+    /* Background */
     p.WriteJmp(Addr::Bg::GET_TOWN_BF_BG, uintptr_t(GetTownBfBackgr));
     p.WriteJmp(Addr::Bg::GET_AREA_BF_BG, uintptr_t(GetAreaBfBackgr));
+
+    /* Fortification */
+    p.WriteByte(Addr::Fort::LOOP_JL_ARG, 0xD4ui8); // change of jump address to Addr::Fort::STD_IMG
+    p.WriteJmp(Addr::Fort::IMG_ENTRY,    uintptr_t(FortSectionImage));
+
+    /* Obstacles */
     p.WriteJmp(Addr::Obst::HERO_ON_BOAT, uintptr_t(Obstacles_HeroOnBoat));
-    p.WriteJmp(Addr::Fort::IMG_ENTRY, uintptr_t(FortSectionImage));
+    p.WriteJmp(Addr::PlObst::GET_INFO,   uintptr_t(Obstacles_GetInfo));
+    InitializeUndergroundObstacles();
 }
 
 
@@ -498,7 +536,7 @@ void BattleBackgroundPatch(PatcherInstance & p) {
 004642BC    jle         004642D4        * If there are no wals, go to CHECK_MAGIC_TERRAIN
 
 Addr::Bg::GET_TOWN_BF_BG:
-004642BE    code patch here --> jump to function GetTownBfBackgr
+004642BE    code patch here --> jump to the function GetTownBfBackgr
 * original instruction:
 * 004642BE  mov         eax,dword ptr [esi+53C8h]   * EAX = address of the town object
 
@@ -509,7 +547,7 @@ Addr::Bg::GET_TOWN_BF_BG:
 CHECK_MAGIC_TERRAIN:
 004642D4    mov         ecx,dword ptr [esi+53C0h]   * ECX = magic terrain type
 Addr::GET_AREA_BF_BG:
-004642DA    code patch here --> jump to function GetAreaBfBackgr
+004642DA    code patch here --> jump to the function GetAreaBfBackgr
 * original instructions:
 * 004642DA  cmp         ecx,0FFFFFFFFh
 * 004642DD  je          004642EC        * If there is no magic terrain, go to CHECK_BOATS

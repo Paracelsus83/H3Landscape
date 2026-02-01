@@ -25,6 +25,9 @@
     <ClInclude Include="game_mod\hota_terrain.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\obstacles.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game_mod\battlefield.cpp">
@@ -35,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>dll</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\obstacles.cpp">
+      <Filter>game_mod</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

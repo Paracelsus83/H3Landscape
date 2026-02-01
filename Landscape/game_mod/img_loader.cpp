@@ -2,70 +2,112 @@
 #include <nh3api/core/nh3api_std/patcher_x86.hpp>
 
 #include "img_loader.hpp"
+#include "asm_helper.h"
 
 
-namespace ImgLdrAddr {
+namespace Addr {
+
+namespace BmpLdr {
 	constexpr uintptr_t ENTRY_POINT = 0x55ABFB;
+    constexpr uintptr_t LOAD_BITMAP = 0x55ACA6;
+    constexpr uintptr_t NO_BITMAP = 0x55AC00;
 
-    constexpr uintptr_t NO_IMAGE = 0x55AC00;
-    constexpr uintptr_t LOAD_IMAGE = 0x55ACA6;
-
-    constexpr uintptr_t FUNC_FIND_IN_LOD = 0x4FB100;
 }
 
-namespace FuncAddr {
+namespace SprLdr {
+    constexpr uintptr_t ENTRY_POINT = 0x55CA9A;
+    constexpr uintptr_t LOAD_SPRITE = 0x55CB3B;
+    constexpr uintptr_t NO_SPRITE = 0x55CA9F;
+}
+
+namespace Func {
     constexpr uintptr_t LODFILE_OPEN = 0x4FAF30;
+    constexpr uintptr_t FIND_IN_LOD = 0x4FB100;
 }
+
+} // namespace Addr
 
 
 static char fullLodPath[MAX_PATH];
-static LODFile bgLodFile;
+static LODFile lodFile;
 
 
-static void __declspec(naked) CheckBgLodFile() {
+ASM_CODE_PATCH CheckBitmapInLodFile() {
     __asm {
-        cmp  dword ptr[bgLodFile], 0 // check if bgLodFile is opened
+        cmp  dword ptr [lodFile], 0 // check if lodFile is opened
         jne  search
-        // if not, call bgLodFile.open(fullLodPath, 1);
+        // if not, call lodFile.open(fullLodPath, 1);
         push 1
 #ifdef __clang__
         mov  ecx, OFFSET fullLodPath
-		push ecx // workaround for clang bug
+        push ecx // workaround for clang bug
 #else
         push OFFSET fullLodPath
 #endif
-        mov  ecx, OFFSET bgLodFile
-        call FuncAddr::LODFILE_OPEN
+        mov  ecx, OFFSET lodFile
+        call Addr::Func::LODFILE_OPEN
         test eax, eax
-        jne fail_end
+        jne  fail_end
     search:
-        mov  esi, OFFSET bgLodFile
+        mov  esi, OFFSET lodFile
         mov  ecx, esi
-        call ImgLdrAddr::FUNC_FIND_IN_LOD
+        call Addr::Func::FIND_IN_LOD
         test al, al
         je   fail
-        jmp  ImgLdrAddr::LOAD_IMAGE // go to loading pcx
+        jmp  Addr::BmpLdr::LOAD_BITMAP // go to loading pcx
     fail:
         push ebx
     fail_end:
         mov  edx, 10h
-        jmp  ImgLdrAddr::NO_IMAGE  // go to warning mesage
+        jmp  Addr::BmpLdr::NO_BITMAP  // go to warning mesage
+    }
+}
+
+
+ASM_CODE_PATCH CheckSpriteInLodFile() {
+    __asm {
+        cmp  dword ptr [lodFile], 0 // check if lodFile is opened
+        jne  search
+        // if not, call lodFile.open(fullLodPath, 1);
+        push 1
+#ifdef __clang__
+        mov  ecx, OFFSET fullLodPath
+        push ecx // workaround for clang bug
+#else
+        push OFFSET fullLodPath
+#endif
+        mov  ecx, OFFSET lodFile
+        call Addr::Func::LODFILE_OPEN
+        test eax, eax
+        jne  fail_end
+    search:
+        mov  ecx, OFFSET lodFile
+        mov  dword ptr [ebp-10h], ecx
+        call Addr::Func::FIND_IN_LOD
+        test al, al
+        je   fail
+        jmp  Addr::SprLdr::LOAD_SPRITE // go to loading pcx
+    fail:
+        push ebx
+    fail_end:
+        mov  edx, 40h
+        jmp  Addr::SprLdr::NO_SPRITE  // go to warning mesage
     }
 }
 
 
 void ImgLoaderPatch(PatcherInstance& p, HMODULE hModule) {
-	const char defaultLodPath[] = "_HD3_Data\\Packs\\Landscape\\Landscape.lod";
-
     size_t pathLen = GetModuleFileName(hModule, fullLodPath, sizeof(fullLodPath));
 
     if ((pathLen > 3) && (pathLen < MAX_PATH)) {
-		// Replace extension "dll" -> "lod"
-		memcpy(fullLodPath + pathLen - 3, "lod", 3);
+        // Replace extension "dll" -> "lod"
+        memcpy(fullLodPath + pathLen - 3, "lod", 3);
     }
     else {
-		memcpy(fullLodPath, defaultLodPath, sizeof(defaultLodPath));
+        const char defaultLodPath[] = "_HD3_Data\\Packs\\Landscape\\Landscape.lod";
+        memcpy(fullLodPath, defaultLodPath, sizeof(defaultLodPath));
     }
-	
-    p.WriteJmp(ImgLdrAddr::ENTRY_POINT, uintptr_t(CheckBgLodFile));
+
+    p.WriteJmp(Addr::BmpLdr::ENTRY_POINT, uintptr_t(CheckBitmapInLodFile));
+    p.WriteJmp(Addr::SprLdr::ENTRY_POINT, uintptr_t(CheckSpriteInLodFile));
 }

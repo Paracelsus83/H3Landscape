@@ -17,7 +17,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         PatcherInstance* instance = patcher->CreateInstance("HD.Plugin.Landscape");
         if (instance) {
             ImgLoaderPatch(*instance, hModule);
-            BattleBackgroundPatch(*instance);
+            BattlefieldPatch(*instance);
         }
     }
     return TRUE;

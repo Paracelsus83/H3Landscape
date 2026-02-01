@@ -50,6 +50,7 @@ set(SOURCE_FILES
 	dllmain.cpp
 	game_mod/battlefield.cpp
 	game_mod/img_loader.cpp
+	game_mod/obstacles.cpp
 )
 
 set(HEADER_FILES
@@ -114,6 +115,19 @@ set(IMAGE_FILES
 	img/SgTwUgBk.bmp
 )
 
+set(SPRITE_FILES
+	sprites/obstacles/ObBDt1Ug.def
+	sprites/obstacles/ObDtS3Ug.def
+	sprites/obstacles/ObDtS4Ug.def
+	sprites/obstacles/ObGMs1Ug.def
+	sprites/obstacles/ObGMs2Ug.def
+	sprites/obstacles/OBSnCrUg.def
+	sprites/obstacles/ObSnRk3U.def
+	sprites/obstacles/ObSnRk5U.def
+	sprites/obstacles/ObSnRk6U.def
+	sprites/obstacles/ObSwMsUg.def
+)
+
 # Create Landscape.dll
 add_library(plugin SHARED ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES})
 set_target_properties(plugin PROPERTIES OUTPUT_NAME "Landscape")
@@ -126,8 +140,8 @@ find_program(MMARCH_PATH "mmarch.exe" PATHS ".")
 if(MMARCH_PATH)
 	# Create Landscape.lod
 	add_custom_command(OUTPUT ${LOD_FILE}
-		COMMAND ${MMARCH_PATH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp
-		DEPENDS ${IMAGE_FILES}
+		COMMAND ${MMARCH_PATH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp sprites\\obstacles\\*.def
+		DEPENDS ${IMAGE_FILES} ${SPRITE_FILES}
 		WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 	)
 	add_custom_target(resources ALL DEPENDS ${LOD_FILE})
