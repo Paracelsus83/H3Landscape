@@ -242,7 +242,10 @@ static bool IsCave(const combatManager* cm) {
     switch (cm->Heroes[0]->type) {
 
     case OBJECT_CREATURE_BANK: {
-            return cm->EventCell->objectIndex == 0; // Cyclops Stockpile
+            const int16_t bankType = cm->EventCell->objectIndex;
+            return bankType == BANK_CYCLOPS_STOCKPILE
+                || bankType == BANK_HOTA_PIRATE_CAVERN
+                || bankType == BANK_HOTA_SPIT;
         }
     case OBJECT_CREATURE_GENERATOR1: {
             const int16_t genType = cm->EventCell->objectIndex;
@@ -265,14 +268,26 @@ static int32_t CaveTerrain(combatManager* cm) {
     case OBJECT_CREATURE_BANK:
         // Creature bank type == 0 means Cyclops Stockpile
         switch (cm->EventCell->objectIndex) {
-        case 0: // Cyclops Stockpile
-            if (const int32_t tt = cm->combatTerrain; tt == eTerrainGrass || tt == eTerrainSnow) {
+        case BANK_CYCLOPS_STOCKPILE:
+        case BANK_HOTA_PIRATE_CAVERN:
+        case BANK_HOTA_SPIT:
+            if (TTerrainType tt = cm->combatTerrain;
+                tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainHighlands) {
                 return eTerrainDirt; // If terrain type is Grass or Snow, use the Dirt background
             }
             else return tt;
-        case 0x15: // Beholders' Sanctuary
-            return eTerrainSwamp;
-        case 0x16: // Temple of the Sea
+        case BANK_HOTA_BEHOLDERS_SANCTUARY:
+            switch (cm->EventCell->GroundSet) {
+            case eTerrainGrass:
+            case eTerrainSwamp:
+            case eTerrainHighlands:
+                return eTerrainSwamp;
+            case eTerrainSubterranean:
+                return eTerrainSubterranean;
+            default:
+                return eTerrainDirt;
+            }
+        case BANK_HOTA_TEMPLE_OF_THE_SEA:
             return cm->EventCell->GroundSet;
         }
         break;

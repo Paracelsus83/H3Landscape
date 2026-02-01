@@ -3,7 +3,7 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
-## [0.0.4]
+## [0.0.4] - 2026-02-01
 
 ### Added game files
 - new obstacle sprites for the underground battlefield:
@@ -20,6 +20,16 @@ All notable changes to the **H3Landscape** project will be documented in this fi
   - `SgTwUgBk.pcx` - improved Tower siege.
 
 ### Game modification
+- Changed algorithm for determining the battlefield background:
+  - Pirate Cavern and Spit are considered caves, which affects the choice of battlefield background image in these objects,
+  - Battles in creature banks considered caves use an underground background, selected according to the following rules:
+    - on grass, snow or highlands, if there is no magical terrain, the “dirt” battlefield background (`CmBkDrUg.pcx`) is used,
+    - for other terrain types, a battlefield background matching the terrain is used,
+    - {for SoD/WoG} in underground, the original “subterranean” battlefield background is used (default H3 behavior);
+  - Battle in Beholders' Sanctuary located on land use an underground background, selected according to the following rules:
+    - on grass, swamp or highlands, if there is no magical terrain, the “swamp” battlefield background (`CmBkSwUg.pcx`) is used,
+    - on “subterranean” or magical terrain, a battlefield background matching the terrain is used,
+    - for other terrain types, the “dirt” battlefield background (`CmBkDrUg.pcx`) is used;
 - Changed algorithm for selecting obstacles on the battlefield:
   - For underground battles, some obstacles containing tree trunks are replaced with their underground counterparts.
 
