@@ -38,8 +38,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,1,0
- PRODUCTVERSION 0,0,1,0
+ FILEVERSION 0,0,4,0
+ PRODUCTVERSION 0,0,4,0
  FILEFLAGSMASK 0x0L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -54,7 +54,7 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "compatible with Horn of the Abyss 1.7.3"
+            VALUE "Comments", "compatible with Horn of the Abyss 1.8.0"
             VALUE "CompanyName", "Paracelsus83"
             VALUE "FileDescription", "Tool for installing H3Landscape in Heroes 3 HotA"
             VALUE "InternalName", "H3L_HotA_Patcher"
