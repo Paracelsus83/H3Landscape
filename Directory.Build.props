@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Target Name="GetH3LVersionFromGit" BeforeTargets="PrepareForBuild">
+		<Exec Command="git describe --tags --abbrev=4 --always --dirty" ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
+			<Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit" />
+		</Exec>
+		<PropertyGroup Condition="$(GitExitCode)==0 AND $(VersionFromGit.StartsWith('v'))">
+			<H3LVersion>$(VersionFromGit.Substring(1))</H3LVersion>
+			<H3LPureVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionFromGit),`\d+\.\d+\.\d+`).Value)</H3LPureVersion>
+			<H3LProdVersion>$(H3LPureVersion.Replace('.', ','))</H3LProdVersion>
+			<DefineConstants>$(DefineConstants);H3LPureVersion=$(H3LPureVersion)</DefineConstants>
+		</PropertyGroup>
+		<PropertyGroup Condition="!$(VersionFromGit.StartsWith('v'))">
+			<H3LVersion Condition="$(GitExitCode)==0">$(VersionFromGit)</H3LVersion>
+			<H3LVersion Condition="$(GitExitCode)!=0">unknown</H3LVersion>
+			<H3LProdVersion>0,0,0</H3LProdVersion>
+			<DefineConstants>$(DefineConstants);H3LPureVersion=0.0.0</DefineConstants>
+		</PropertyGroup>
+		<ItemGroup Condition="'$(VCTargetsPath)' != ''">
+			<ResourceCompile>
+				<PreprocessorDefinitions>H3LANDSCAPE_VERSION=$(H3LVersion);H3L_PROD_VERSION=$(H3LProdVersion),0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			</ResourceCompile>
+		</ItemGroup>
+	</Target>
+</Project>

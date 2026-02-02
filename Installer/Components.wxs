@@ -1,0 +1,14 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+		<ComponentGroup Id="H3LComponents">
+			<Component Guid="1B016507-1FBA-49F6-B39F-6665B11A5900" Directory="PluginDir">
+				<File Name="$(var.Landscape.TargetFileName)" Source="$(var.Landscape.TargetPath)" />
+				<File Name="$(var.Landscape.TargetName).lod" Source="$(var.SolutionDir)\LodBuild\$(var.Landscape.TargetName).lod" />
+			</Component>
+			<Component Guid="696BD75C-9B66-47B1-9C14-E92C9C2E7E65" Directory="INSTALLFOLDER">
+				<File Id="PatcherExe" Name="$(var.Patcher.TargetFileName)" Source="$(var.Patcher.TargetPath)" />
+				<RemoveFile Name="H3HotA_HD_L.exe" On="uninstall" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>

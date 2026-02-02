@@ -1,0 +1,48 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+		<Property Id="INSTALL_PATH_NWC">
+			<RegistrySearch Id="SearchPath1" Root="HKLM" Key="SOFTWARE\New World Computing\Heroes of Might and Magic® III\1.0" Name="AppPath" Type="directory">
+				<DirectorySearch Id="CheckDirExists1" />
+			</RegistrySearch>
+		</Property>
+		<Property Id="INSTALL_PATH_GOG_X64">
+			<RegistrySearch Id="SearchPath2"
+							Root="HKCU"
+							Key="SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0"
+							Name="AppPath"
+							Type="directory">
+				<DirectorySearch Id="CheckDirExists2" />
+			</RegistrySearch>
+		</Property>
+		<Property Id="INSTALL_PATH_GOG_X86">
+			<RegistrySearch Id="SearchPath3"
+							Root="HKCU"
+							Key="SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\New World Computing\Heroes of Might and Magic® III\1.0"
+							Name="AppPath"
+							Type="directory">
+				<DirectorySearch Id="CheckDirExists3" />
+			</RegistrySearch>
+		</Property>
+		<Property Id="INSTALL_PATH_HOTA">
+			<RegistrySearch Id="SearchPath4" Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HotA + HD_is1" Name="Inno Setup: App Path" Type="directory">
+				<DirectorySearch Id="CheckDirExists4" />
+			</RegistrySearch>
+		</Property>
+
+		<CustomAction Id="AssignPath4" Property="INSTALLFOLDER" Value="[INSTALL_PATH_HOTA]" />
+		<CustomAction Id="AssignPath3" Property="INSTALLFOLDER" Value="[INSTALL_PATH_GOG_X86]" />
+		<CustomAction Id="AssignPath2" Property="INSTALLFOLDER" Value="[INSTALL_PATH_GOG_X64]" />
+		<CustomAction Id="AssignPath1" Property="INSTALLFOLDER" Value="[INSTALL_PATH_NWC]" />
+
+		<StandardDirectory Id="ProgramFiles6432Folder">
+			<Directory Id="INSTALLFOLDER" Name="Heroes of Might and Magic III" />
+		</StandardDirectory>
+
+		<InstallUISequence>
+			<Custom Action="AssignPath4" After="AppSearch" Condition="INSTALL_PATH_HOTA" />
+			<Custom Action="AssignPath3" After="AssignPath4" Condition="INSTALL_PATH_GOG_X86" />
+			<Custom Action="AssignPath2" After="AssignPath3" Condition="INSTALL_PATH_GOG_X64" />
+			<Custom Action="AssignPath1" After="AssignPath2" Condition="INSTALL_PATH_NWC" />
+		</InstallUISequence>
+	</Fragment>
+</Wix>

@@ -3,6 +3,15 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.1.0]
+
+### Modified components
+- The new MSI installer — created using the WiX Toolset.
+
+### Build system
+- The procedure for determining the project version based on GIT tag has been moved to the `Directory.Build.props` file.
+
+
 ## [0.0.5] - 2026-03-01
 
 ### Added game files

@@ -1,0 +1,38 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+	<Package Name="H3Landscape"
+			 Manufacturer="Paracelsus"
+			 Version="$(var.H3LPureVersion)"
+			 Scope="perUser" 
+			 UpgradeCode="A5E3A47F-0FC5-44B7-8A05-70EE370C1B43">
+
+		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+		<MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+		<Icon Id="ICON" SourceFile="H3Landscape.ico" />
+
+		<Property Id="DISABLEROLLBACK" Value="1" />
+		<Property Id="ARPPRODUCTICON" Value="ICON" />
+		<Property Id="LicenseAccepted" Value="1" />
+
+		<ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+		<WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+		<WixVariable Id="WixUIBannerBmp" Value="Banner.png" />
+		<WixVariable Id="WixUIDialogBmp" Value="Background.png" />
+
+		<DirectoryRef Id="INSTALLFOLDER">
+			<Directory Id="HD3_Data" Name="_HD3_Data">
+				<Directory Id="HD3_Packs" Name="Packs">
+					<Directory Id="PluginDir" Name="Landscape" />
+				</Directory>
+			</Directory>
+		</DirectoryRef>
+
+		<Feature Id="Main">
+			<ComponentGroupRef Id="H3LComponents" />
+		</Feature>
+
+		<CustomAction Id="Patch" FileRef="PatcherExe" ExeCommand="" Return="ignore" Execute="deferred" Impersonate="no" />
+		<InstallExecuteSequence>
+			<Custom Action="Patch" After="InstallFiles" Condition="NOT Installed" />
+		</InstallExecuteSequence>
+	</Package>
+</Wix>

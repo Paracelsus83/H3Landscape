@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11620.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Landscape", "Landscape\Landscape.vcxproj", "{9020E824-A738-4B61-ADEE-51E16E3C2EC2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Patcher", "Patcher\Patcher.vcxproj", "{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{52B20422-474D-5734-629F-99A1F7DE9787}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Installer", "Installer\Installer.wixproj", "{52B20422-474D-5734-629F-99A1F7DE9787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +20,11 @@ Global
 		{9020E824-A738-4B61-ADEE-51E16E3C2EC2}.Release|x86.ActiveCfg = Release|Win32
 		{9020E824-A738-4B61-ADEE-51E16E3C2EC2}.Release|x86.Build.0 = Release|Win32
 		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Debug|x86.ActiveCfg = Debug|Win32
+		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Debug|x86.Build.0 = Debug|Win32
 		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Release|x86.ActiveCfg = Release|Win32
-		{52B20422-474D-5734-629F-99A1F7DE9787}.Debug|x86.ActiveCfg = Release
-		{52B20422-474D-5734-629F-99A1F7DE9787}.Release|x86.ActiveCfg = Release
+		{5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585}.Release|x86.Build.0 = Release|Win32
+		{52B20422-474D-5734-629F-99A1F7DE9787}.Debug|x86.ActiveCfg = Debug|x86
+		{52B20422-474D-5734-629F-99A1F7DE9787}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

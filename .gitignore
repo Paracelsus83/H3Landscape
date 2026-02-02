@@ -3,6 +3,7 @@ CMakeFiles/
 Debug/
 Release/
 LodBuild/
+obj/
 CMakeCache.txt
 install_manifest.txt
 compile_commands.json

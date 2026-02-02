@@ -101,21 +101,4 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Target Name="BeforeResourceCompile">
-    <Exec Command="git describe --tags --abbrev=4 --always --dirty" EchoOff="true" IgnoreExitCode="true" ConsoleToMsBuild="true" StandardErrorImportance="low" StandardOutputImportance="low">
-      <Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit" />
-    </Exec>
-    <Message Importance="High" Text="H3Landscape version: $(VersionFromGit)" />
-    <PropertyGroup>
-      <H3LVersion Condition="$(VersionFromGit.StartsWith('v'))">$(VersionFromGit.Substring(1))</H3LVersion>
-      <H3LVersion Condition="!$(VersionFromGit.StartsWith('v'))">$(VersionFromGit)</H3LVersion>
-      <H3LProdVersion Condition="$(VersionFromGit.StartsWith('v'))">$([System.Text.RegularExpressions.Regex]::Match($(VersionFromGit),`\d+\.\d+\.\d+`).Value.Replace('.', ','))</H3LProdVersion>
-      <H3LProdVersion Condition="$(H3LProdVersion)==''">0,0,0</H3LProdVersion>
-    </PropertyGroup>
-    <ItemGroup>
-      <ResourceCompile>
-        <PreprocessorDefinitions>H3LANDSCAPE_VERSION=$(H3LVersion);H3L_PROD_VERSION=$(H3LProdVersion),0</PreprocessorDefinitions>
-      </ResourceCompile>
-    </ItemGroup>
-  </Target>
 </Project>
