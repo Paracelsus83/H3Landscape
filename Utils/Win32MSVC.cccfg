@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- CppCheck configuration for MSVC, x86 Win32 -->
+<def format="2">
+ <define name="_PREFAST_" value="1"/>
+
+ <define name="WIN32" value=""/>
+ <define name="_WIN32" value="1"/>
+ <define name="_UCRT" value=""/>
+
+ <define name="_M_IX86" value="600"/>
+ <define name="_M_IX86_FP" value="1"/>
+ 
+ <define name="_MSC_VER" value="1944"/>
+ <define name="_MSC_BUILD" value="0"/>
+ <define name="_MSC_FULL_VER" value="194435222"/>
+ 
+ <define name="_MSVC_LANG" value="__cplusplus"/>
+ <define name="_MSVC_TRADITIONAL" value="1"/>
+ <define name="_STL_LANG" value="__cplusplus"/>
+ <define name="_CPPLIB_VER" value="650"/>
+
+ <define name="_INTEGRAL_MAX_BITS" value="64"/>
+ <define name="_WCHAR_T_DEFINED" value="1"/>
+ <define name="__STDCPP_DEFAULT_NEW_ALIGNMENT__" value="8u"/>
+</def>

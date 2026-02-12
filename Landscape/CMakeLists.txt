@@ -1,50 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
-if(WIN32 AND CMAKE_GENERATOR STREQUAL "NMake Makefiles")
-	include(NMake.cmake)
-endif()
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-	set(CMAKE_GENERATOR_PLATFORM Win32)
+if(MSVC) # remove the default compilation option /EHsc
+	string(REPLACE /EHsc "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
-
-project(H3Landscape CXX)
-
-cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH PROJECT_PATH)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_PATH}/${CMAKE_BUILD_TYPE}")
-
-set(CMAKE_CXX_STANDARD 17) # Set the C++17 standard
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(MSVC)
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /D_HAS_EXCEPTIONS=0 /W3 /GR- /GS- /EHs- /fp:except- /Zc:threadSafeInit-")
-endif()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	add_compile_options(-m32)
-endif()
-
-
-# Determining the version for a DLL file
-execute_process(
-	COMMAND git describe --tags --abbrev=4 --always
-	OUTPUT_VARIABLE VERSION_FROM_GIT
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-if(VERSION_FROM_GIT)
-	message("-- H3Landscape version: ${VERSION_FROM_GIT}")
-	string(SUBSTRING "${VERSION_FROM_GIT}" 0 1 VER_FIRST_CHAR)
-	if(VER_FIRST_CHAR STREQUAL "v")
-		string(SUBSTRING "${VERSION_FROM_GIT}" 1 -1 H3L_VERSION)
-	else()
-		set(H3L_VERSION "${VERSION_FROM_GIT}")
-	endif()
-else()
-	set(H3L_VERSION "unknown")
-endif()
-
-
-# Use NH3API library headers
-include_directories("../NH3API")
+# ===== list of source files ===== #
 
 set(SOURCE_FILES
 	dllmain.cpp
@@ -128,36 +88,51 @@ set(SPRITE_FILES
 	sprites/obstacles/ObSwMsUg.def
 )
 
-# Create Landscape.dll
+# ===== building the Landscape.dll plug-in ===== #
+
 add_library(plugin SHARED ${HEADER_FILES} ${SOURCE_FILES} ${RESOURCE_FILES})
 set_target_properties(plugin PROPERTIES OUTPUT_NAME "Landscape")
-target_compile_definitions(plugin PRIVATE H3LANDSCAPE_VERSION=${H3L_VERSION})
 
+target_compile_definitions(plugin PRIVATE _HAS_EXCEPTIONS=0)
+target_include_directories(plugin PRIVATE "../NH3API") # Use NH3API library headers
 
-set(LOD_FILE "${PROJECT_PATH}/LodBuild/Landscape.lod")
+if(MSVC)
+	target_compile_options(plugin PRIVATE /GR- /GS- /EHs- /fp:except- /Zc:threadSafeInit-)
+elseif(CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "GNU")
+	target_compile_options(plugin PRIVATE -fno-exceptions -fno-threadsafe-statics)
+endif()
 
-find_program(MMARCH_PATH "mmarch.exe" PATHS ".")
-if(MMARCH_PATH)
-	# Create Landscape.lod
+if(CMAKE_CXX_CPPCHECK)
+	set_property(TARGET plugin APPEND PROPERTY CXX_CPPCHECK "--suppress=*:nh3api/*")
+	if(MSVC)
+		set_property(TARGET plugin APPEND PROPERTY CXX_CPPCHECK
+			"-D_HAS_EXCEPTIONS=0"
+			"-I../NH3API"
+		)
+	endif()
+endif()
+
+# ===== building the Landscape.lod archive ===== #
+
+set(LOD_FILE "../LodBuild/Landscape.lod")
+
+if(MMARCH)
 	add_custom_command(OUTPUT ${LOD_FILE}
-		COMMAND ${MMARCH_PATH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp sprites\\obstacles\\*.def
+		COMMAND ${MMARCH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp sprites\\obstacles\\*.def
 		DEPENDS ${IMAGE_FILES} ${SPRITE_FILES}
 		WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 	)
 	add_custom_target(resources ALL DEPENDS ${LOD_FILE})
 else()
-	message(WARNING "The mmarch.exe tool not found; Building the Landsape.lod archive is disabed.")
+	message(WARNING "The mmarch.exe tool not found; Building the Landscape.lod is disabled.")
 endif()
 
-
-find_file(HD3_DATA_PATH "_HD3_Data" PATHS
-	"[HKLM/SOFTWARE/WOW6432Node/New World Computing/Heroes of Might and Magic® III/1.0;AppPath]"
-	"[HKCU/SOFTWARE/Classes/VirtualStore/MACHINE/SOFTWARE/WOW6432Node/New World Computing/Heroes of Might and Magic® III/1.0;AppPath]"
-	"[HKLM/SOFTWARE/WOW6432Node/Microsoft/Windows/CurrentVersion/Uninstall/HotA + HD_is1;Inno Setup: App Path]"
-)
+# ===== installation of Landscape.* files ===== #
 
 if(HD3_DATA_PATH)
 	set(INSTALL_DEST_PATH "${HD3_DATA_PATH}/Packs/Landscape")
-	install(TARGETS plugin RUNTIME DESTINATION "${INSTALL_DEST_PATH}")
-	install(FILES ${LOD_FILE} DESTINATION "${INSTALL_DEST_PATH}")
+	install(TARGETS plugin RUNTIME DESTINATION ${INSTALL_DEST_PATH})
+	if(MMARCH)
+		install(FILES ${LOD_FILE} DESTINATION ${INSTALL_DEST_PATH})
+	endif()
 endif()

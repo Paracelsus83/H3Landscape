@@ -40,8 +40,8 @@ END
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION H3L_DLL_VERSION
- PRODUCTVERSION H3L_DLL_VERSION
- FILEFLAGSMASK 0x17L
+ PRODUCTVERSION H3L_PROD_VERSION
+ FILEFLAGSMASK 0x0FL
  FILEFLAGS H3L_DLL_FLAGS
  FILEOS VOS_NT_WINDOWS32
  FILETYPE VFT_DLL
@@ -53,7 +53,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "compatible with HoMM3 Complete and Horn of the Abyss 1.8.0"
             VALUE "CompanyName", "Paracelsus83"
-            VALUE "FileDescription", "Addon for HoMM3 HD+"
+            VALUE "FileDescription", "Addon for HoMM3 SoD/HotA"
             VALUE "InternalName", "HD.Plugin.Landscape"
             VALUE "LegalCopyright", "(C) 2025 Paracelsus83, MIT licensed"
             VALUE "OriginalFilename", "Landscape.dll"
@@ -69,7 +69,6 @@ END
 
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
-
 
 
 #ifndef APSTUDIO_INVOKED

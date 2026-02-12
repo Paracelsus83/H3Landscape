@@ -3,15 +3,23 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.0.5]
+
+### Build system
+- Improved CMake project files:
+  - Added static analysis of C++ code using CppCheck and Clang-Tidy,
+  - Improved project version setting based on data from the GIT repository.
+
+
 ## [0.0.4] - 2026-02-01
 
 ### Added game files
-- new obstacle sprites for the underground battlefield:
+- New obstacle sprites for the underground battlefield:
   - `ObBDt1Ug.def`, `ObDtS3Ug.def`, `ObDtS4Ug.def` - rocks on dirt,
   - `ObGMs1Ug.def`, `ObGMs2Ug.def`, `ObSwMsUg.def` - mushrooms on grass/swamp,
   - `OBSnCrUg.def` - ice crevasse,
   - `ObSnRk3U.def`, `ObSnRk5U.def`, `ObSnRk6U.def` - rocks on snow;
-- background images of underground battlefields modified compared to version 0.0.3:
+- Background images of underground battlefields modified compared to version 0.0.3:
   - `CmBkDkUg.pcx` - improved boat,
   - `CmBkCFUg.pcx` - improved clover field,
   - `CmBkHGUg.pcx` - improved holy ground,
@@ -37,7 +45,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ## [0.0.3] - 2026-01-01
 
 ### Added game files
-- new image (pcx file in Landscape.lod archive):
+- New image (.pcx file in `Landscape.lod` archive):
   - `SgBwUgBk.pcx` - background of the underground battlefield in Bulwark.
 
 ### Game modification
@@ -57,7 +65,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 - `H3L_HotA_Patcher.exe` - tool for integrating the H3Landscape add-on with Horn of the Abyss.
 
 ### Added game files
-- new images (pcx files in Landscape.lod archive):
+- New images (.pcx files in `Landscape.lod` archive):
   - background images of underground battlefields:
     - `CmBkCstUg.pcx` - sandy coast,
     - `CmBkFGrUg.pcx` - fairy grass - underground equivalent of highlands,
@@ -75,7 +83,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
     - `SgDnCGMlip.pcx` - Dungeon moat lip on cursed ground,
     - `SgDnRkMlip.pcx` - Dungeon moat lip on rockland,
     - `SgFaMoatUg.pcx` - Factory moat in the underground;
-- battlefield background images modified compared to version 0.0.1:
+- Battlefield background images modified compared to version 0.0.1:
   - `SgElUgBk.pcx` - siege of the Conflux in the underground (adjustment to HotA),
   - `SgCFBack.pcx` - siege on the clover field on the surface (corrected),
   - `SgCFUgBk.pcx` - siege on the clover field in the underground (corrected).
@@ -100,7 +108,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 	  - for Dungeon, `SgDnRkMlip.pcx` is used as a moat lip image.
 
 ### Build system
-- Added `CMakeLists.txt` file to enable building `Landscape.dll` and `Landscape.lod` using cmake.
+- Added `CMakeLists.txt` file to enable building `Landscape.dll` and `Landscape.lod` using CMake.
 
 
 ## [0.0.1] - 2025-11-01
@@ -109,7 +117,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 - MSI installer that copies `Landscape.dll` and `Landscape.lod` files to the `_HD3_Data\Packs\Landscape` subfolder inside the game folder.
 
 ### Added game files
-- new battlefield background images (pcx files in Landscape.lod archive):
+- New battlefield background images (.pcx files in `Landscape.lod` archive):
   - terrain on the surface:
     - `CmBkRedMt.pcx` - “read rocks” - replacement for “subterranean”
   - underground terrains:
@@ -182,5 +190,5 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ### Build system
 - Added project files for Microsoft Visual Studio 2022:
   - `H3Landscape.sln` - solution file,
-  - `Landscape/Landscape.vcxproj` - project for building Landscape.dll and Landscape.lod,
-  - `Installer.vdproj` - project for building H3Landscape.msi.
+  - `Landscape/Landscape.vcxproj` - project for building `Landscape.dll` and `Landscape.lod`,
+  - `Installer.vdproj` - project for building `H3Landscape.msi`.

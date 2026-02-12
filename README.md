@@ -29,15 +29,16 @@ To build the H3Landscape plugin, you need Microsoft Visual Studio 2022 with the 
 - C++ Windows XP Support for VS 2017 (v141) tools
 - Windows Universal CRT SDK
 
-You can build the plugin in two ways:
+You can build the plugin in several ways:
 - by opening the `H3Landscape.sln` solution in Visual Studio 2022 (MSBuild + CL compiler)
 - by using the `CMake` tool with `NMake Makefiles` generator (NMake + Clang-CL compiler)
+- by using the `CMake` tool with `Visual Studio` generator (MSBuild + CL compiler)
 
 If you want to build the plugin using CMake on Windows, it is recommended to install the Clang compiler, which is provided as a component of Visual Studio.
 
 To generate project files using CMake, it is best to use the following command:
 ```
-cmake -G "NMake Makefiles" Landscape
+cmake -G "NMake Makefiles" <source dir>
 ```
 (the `NMake` tool is part of the Microsoft Visual Studio package)
 

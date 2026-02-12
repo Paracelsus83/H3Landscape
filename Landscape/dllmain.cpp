@@ -6,7 +6,7 @@
 bool HotAMode = false;
 
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
         Patcher* patcher = GetPatcher();
         if (patcher == nullptr) return FALSE;
