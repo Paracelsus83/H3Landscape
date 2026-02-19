@@ -40,6 +40,7 @@
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup>
+    <ExecutablePath>$(SolutionDir)\Utils;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(SolutionDir)NH3API;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -72,7 +73,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <CustomBuildStep>
-      <Command>$(BuildLodCommand) || ..\dwl_mmarch.cmd &amp;&amp; $(BuildLodCommand)</Command>
+      <Command>$(BuildLodCommand) || ..\Utils\DwlMMArch.cmd &amp;&amp; $(BuildLodCommand)</Command>
       <Message>------ Creating $(TargetName).lod archive</Message>
       <Inputs>
 img/CmBkCFUg.bmp;
