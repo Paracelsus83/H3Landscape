@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "AT4RE_Lib/pefile.hpp"
 
 

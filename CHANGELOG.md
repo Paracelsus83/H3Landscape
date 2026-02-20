@@ -5,6 +5,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ## [0.0.5]
 
+### Modified components
+- `H3L_HotA_Patcher.exe` is compatible with Windows XP.
+
 ### Build system
 - Improved CMake project files:
   - Added static analysis of C++ code using CppCheck and Clang-Tidy,
