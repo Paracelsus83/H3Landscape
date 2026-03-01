@@ -3,7 +3,27 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
-## [0.0.5]
+## [0.0.5] - 2026-03-01
+
+### Added game files
+- New image (.pcx file in `Landscape.lod` archive):
+  - `CmBkMCBt.pcx` - battlefield background with two boats on magical clouds.
+
+### Game modification
+- Changed algorithm for determining the battlefield background:
+  - The image `CmBkMCBt.pcx` is used as the background for the battlefield on two boats on magical clouds,
+  - For battles in water objects located on land:
+    - Shipwreck uses a background that matches the type of terrain it is located on,
+    - Temple of the Sea (considered a cave) uses a background that matches the type of terrain it is located on, except for lava, for which the “dirt” background (`CmBkDrUg.pcx`) is used,
+    - Beholders' Sanctuary (considered a cave) uses a background that matches the type of terrain it is located on, with the following exceptions:
+      - on “grass” and “highland” terrains, the “swamp” background (`CmBkSwUg.pcx`) is used,
+      - on “snow” and “lava” terrains, the “dirt” background (`CmBkDrUg.pcx`) is used;
+  - For battles on the coast - unified method of selecting backgrounds in SoD and HotA:
+    - the original “coast” background is used on the surface, unless there is an object considered to be a cave,
+    - the “underground sandy coast” background (`CmBkCstUg.pcx`) is used in underground areas and caves, unless the terrain type is “subterranean”,
+    - the “subterranean shore” background (`CmBkLkUg.pcx`) is used in underground areas and caves, if the terrain type is “subterranean”;
+- Changed algorithm for selecting obstacles on the battlefield:
+  - If the battle takes place on two boats, obstacle graphics matching the boats are always used (even in the case of magical terrain).
 
 ### Modified components
 - `H3L_HotA_Patcher.exe` is compatible with Windows XP.

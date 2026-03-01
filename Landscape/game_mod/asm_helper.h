@@ -3,21 +3,9 @@
 
 #define ASM_CODE_PATCH static __declspec(naked) void __fastcall
 
-#define CODE_PATCH static __declspec(noreturn) void __fastcall
-
-#define GET_FROM_REG(outVar, reg) __asm { mov outVar, reg }
-
-#define SET_EBX(value) __asm { mov ebx, value }
-#define SET_ECX(value) __asm { mov ecx, value }
-
 #ifdef _MSC_VER
-#pragma warning(disable:4731)
+    extern "C" void* _AddressOfReturnAddress(void);
+    #define RETURN_ADDRESS (*static_cast<uintptr_t*>(_AddressOfReturnAddress()))
+#elif defined(__GNUG__)
+    #define RETURN_ADDRESS (static_cast<uintptr_t*>(__builtin_frame_address(0))[1])
 #endif
-
-#define PATCH_RETURN(retValue, retAddr) __asm { \
-    __asm mov eax, retValue \
-    __asm pop esi \
-    __asm mov esp, ebp \
-    __asm pop ebp \
-    __asm jmp retAddr \
-}

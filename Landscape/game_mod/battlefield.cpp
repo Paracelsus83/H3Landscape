@@ -1,21 +1,24 @@
 #include <nh3api/core/global.hpp>
-#include <nh3api/core/nh3api_std/patcher_x86.hpp>
 
 #include "battlefield.hpp"
 #include "asm_helper.h"
+#include "asm_patch.hpp"
 #include "hota_terrain.hpp"
 #include "obstacles.hpp"
 
 
 namespace Addr { // Function and data addresses inside Heroes3.exe
 
-constexpr uintptr_t FUNC_RANDOM = 0x50C7C0; // "random" function
-constexpr uintptr_t GAME_OBJ_PTR = 0x699538; // address of pointer to game object
+namespace CT {
+    constexpr uintptr_t WOBJ_ENTRY = 0x464020;
+    constexpr uintptr_t ENTRY = 0x464031;
+    constexpr uintptr_t ENTRY_HOTA = 0x464050;
+    constexpr uintptr_t END_OF_FUNC = 0x4640F7;
+}
 
 namespace Bg { // Addresses inside the function selecting battlefield background
-    constexpr uintptr_t GET_TOWN_BF_BG = 0x4642BE;
-    constexpr uintptr_t GET_AREA_BF_BG = 0x4642DA;
-    constexpr uintptr_t STD_BF_BG = 0x46431E;
+    constexpr uintptr_t FORT_BF_ENTRY = 0x4642BE;
+    constexpr uintptr_t AREA_BF_ENTRY = 0x4642D4;
     constexpr uintptr_t END_OF_FUNC = 0x46435E;
 }
 
@@ -27,20 +30,9 @@ namespace Fort { // Addresses inside the function selecting fortification graphi
     constexpr uintptr_t LOOP_JL_ARG = 0x46300E;
 }
 
-namespace Obst { // Addresses inside the function setting obstacles on the battlefield
-    constexpr uintptr_t HERO_ON_BOAT = 0x4662E6;
-    constexpr uintptr_t TWO_BOATS = 0x4662F0;
-    constexpr uintptr_t STD_PLACEMENT = 0x466387;
-}
-
 namespace PlObst { // Addresses inside the function placing one obstacle on the battlefield
     constexpr uintptr_t GET_INFO = 0x465C25;
     constexpr uintptr_t AFTER_GET_INFO = 0x465C2B;
-}
-
-namespace Img { // File names of battlefield background images
-    constexpr uintptr_t BoatDeckBackgr = 0x66FF4C; // boat background
-    constexpr uintptr_t TwoBoatsBackgr = 0x66FF5C; // boat vs boat background
 }
 
 } // namespace Addr
@@ -50,8 +42,11 @@ typedef const char* CStrPtr;
 
 inline CStrPtr StrAddr(uintptr_t addr) { return reinterpret_cast<CStrPtr>(addr); }
 
-#define H3BoatDeckBackgr StrAddr(Addr::Img::BoatDeckBackgr)
-#define H3TwoBoatsBackgr StrAddr(Addr::Img::TwoBoatsBackgr)
+/* Background of the battlefield on boat */
+#define H3BoatDeckBackgr StrAddr(0x66FF4C)
+
+/* Background of the battlefield on two boats */
+#define H3TwoBoatsBackgr StrAddr(0x66FF5C)
 
 /* Background of the battlefield on the surface - "Red Rocks" */
 CStrPtr const RedRocksBackgr = "CmBkRedMt.pcx";
@@ -143,6 +138,12 @@ const CStrPtr TownBfUndBackgr[MAX_HOTA_TOWN_TYPES] = {
     /* eTownBulwark    */ "SgBwUgBk.pcx"
 };
 
+
+namespace Combat {
+    static bool Cave = false; // battle is taking place in a cave
+    static TTerrainType BgTerrain = eTerrainDirt;
+}
+
 namespace Fort {
 
 namespace Item { /* Fortification item IDs */
@@ -161,19 +162,120 @@ namespace Img { /* Fortification image file names */
 extern bool HotAMode;
 
 
-CODE_PATCH GetTownBfBackgr(combatManager* cm) {
-/* input:
-    ECX: address of combatManager object - cm
-    EAX: fortification level - fortLvl
-*/
-    TFortificationLevel fortLvl;
-    GET_FROM_REG(fortLvl, eax);
+template<typename LExpr, typename ...RExpr>
+inline constexpr bool IsOneOf(LExpr lexpr, RExpr... rexpr) {
+    return ((lexpr == rexpr) || ...);
+}
 
+
+static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
+    Combat::Cave = false;
+    Combat::BgTerrain = TTerrainType(cm->EventCell->GroundSet);
+
+    switch (cm->Heroes[0]->type) {
+
+    case OBJECT_CREATURE_BANK:
+        if (IsOneOf(cm->EventCell->objectIndex, BANK_CYCLOPS_STOCKPILE, BANK_HOTA_PIRATE_CAVERN, BANK_HOTA_SPIT)) {
+            Combat::Cave = true;
+            const TTerrainType realTerrain = Combat::BgTerrain;
+            if (IsOneOf(realTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
+                // If terrain type is Grass, Snow or Highlands, use the Dirt background
+                Combat::BgTerrain = eTerrainDirt;
+            }
+            return realTerrain;
+        }
+        break;
+
+    case OBJECT_CREATURE_GENERATOR1:
+        // Creature generator types: 1 means Behemoth Crag, 9 means Cyclops Cave
+        if (IsOneOf(cm->EventCell->objectIndex, 1, 9)) {
+            Combat::Cave = true;
+            if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
+                Combat::BgTerrain = eTerrainRough;
+            }
+            break;
+        }
+        break;
+
+    case OBJECT_MINE:
+        switch (cm->EventCell->objectIndex) {
+        case ABANDONED:
+            Combat::Cave = true;
+            Combat::BgTerrain = eTerrainSubterranean;
+            break;
+        case CRYSTAL:
+        case GOLD:
+            Combat::Cave = true;
+            if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainSnow, eTerrainSwamp, eTerrainHighlands)) {
+                Combat::BgTerrain = eTerrainRough;
+            }
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    if (!Combat::Cave && cm->EventCell->IsBeachBorder
+        && (Combat::BgTerrain != eTerrainSubterranean || cm->map_point.z == 0)) {
+        cm->magic_terrain = MAGIC_TERRAIN_COAST;
+        Combat::BgTerrain = eTerrainSand;
+    }
+
+    return Combat::BgTerrain;
+}
+
+
+static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager* cm) {
+    Combat::Cave = false;
+    Combat::BgTerrain = TTerrainType(cm->EventCell->GroundSet);
+
+    if (Combat::BgTerrain == eTerrainWater) {
+        cm->OnBoats = true;
+    }
+    else {
+        switch (cm->Heroes[0]->type) {
+
+        case OBJECT_CREATURE_BANK:
+            switch (cm->EventCell->objectIndex) {
+            case BANK_HOTA_BEHOLDERS_SANCTUARY:
+                Combat::Cave = true;
+                if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainHighlands)) {
+                    Combat::BgTerrain = eTerrainSwamp;
+                }
+                else if (IsOneOf(Combat::BgTerrain, eTerrainSnow, eTerrainLava)) {
+                    Combat::BgTerrain = eTerrainDirt;
+                }
+                return eTerrainWater;
+            case BANK_HOTA_TEMPLE_OF_THE_SEA:
+                Combat::Cave = true;
+                if (Combat::BgTerrain == eTerrainLava){
+                    Combat::BgTerrain = eTerrainDirt;
+                }
+                return eTerrainWater;
+            }
+            break;
+
+        case OBJECT_DERELICT_SHIP:
+            cm->OnBoats = true;
+            Combat::BgTerrain = eTerrainWater;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return Combat::BgTerrain;
+}
+
+
+static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
+    const bool underground = cm->map_point.z > 0;
     const TTownType tt = TTownType(cm->combatTown->townType);
-    const bool underground = (cm->map_point.z != 0);
-    CStrPtr bgStrPtr = nullptr;
 
-    if (underground && tt == eTownFactory && fortLvl >= eFortificationCitadel) {
+    if (underground && tt == eTownFactory && cm->fortificationLevel >= eFortificationCitadel) {
         Fort::Img::Moat = "SgFaMoatUg.pcx";
     }
 
@@ -181,48 +283,50 @@ CODE_PATCH GetTownBfBackgr(combatManager* cm) {
 
     case MAGIC_TERRAIN_INVALID:
         if (tt == eTownNecropolis && cm->EventCell->GroundSet == eTerrainSnow) {
-            bgStrPtr = underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
+            return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
         }
         break;
     case MAGIC_TERRAIN_CURSED_GROUND:
-        if ((fortLvl == eFortificationFort && tt != eTownTower)
-            || tt == eTownNecropolis || tt == eTownDungeon || tt == eTownStronghold || tt == eTownConflux) {
-            bgStrPtr = underground ? TownBfUndBackgr[eTownStronghold] : "SgCurBack.pcx";
-        }
-        if (tt == eTownDungeon && fortLvl >= eFortificationCitadel) {
+        if (tt == eTownTower) break;
+
+        if (tt == eTownDungeon && cm->fortificationLevel >= eFortificationCitadel) {
             Fort::Img::MoatLip = "SgDnCGMlip.pcx";
+        }
+        if (cm->fortificationLevel == eFortificationFort
+            || IsOneOf(tt, eTownNecropolis, eTownDungeon, eTownStronghold, eTownConflux)) {
+            return underground ? TownBfUndBackgr[eTownStronghold] : "SgCurBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_EVIL_FOG:
-        if (fortLvl == eFortificationFort && tt != eTownTower) {
-            bgStrPtr = underground ?
+        if (cm->fortificationLevel == eFortificationFort && tt != eTownTower) {
+            return underground ?
                 MagicBfUndBackgr[MAGIC_TERRAIN_EVIL_FOG] : MagicBfBackgr[MAGIC_TERRAIN_EVIL_FOG];
         }
         break;
     case MAGIC_TERRAIN_CLOVER_FIELD:
-        if (tt == eTownCastle || tt == eTownRampart || tt == eTownStronghold || tt == eTownFortress || tt == eTownConflux || tt == eTownCove) {
-            bgStrPtr = underground ? "SgCFUgBk.pcx" : "SgCFBack.pcx";
-        }
-        if (tt == eTownStronghold && fortLvl >= eFortificationCitadel) {
+        if (tt == eTownStronghold && cm->fortificationLevel >= eFortificationCitadel) {
             Fort::Img::Moat = "SgCFMoat.pcx";
+        }
+        if (IsOneOf(tt, eTownCastle, eTownRampart, eTownStronghold, eTownFortress, eTownConflux, eTownCove)) {
+            return underground ? "SgCFUgBk.pcx" : "SgCFBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_FIERY_FIELDS:
         if (tt == eTownInferno) {
-            bgStrPtr = "SgFFBack.pcx";
+            return "SgFFBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_ROCKLANDS:
-        if (tt == eTownCastle || tt == eTownInferno || tt == eTownNecropolis || tt == eTownDungeon || tt == eTownConflux || tt == eTownCove) {
-            bgStrPtr = underground ? "SgRkUgBk.pcx" : "SgRkBack.pcx";
-        }
-        if (tt == eTownDungeon && fortLvl >= eFortificationCitadel) {
+        if (tt == eTownDungeon && cm->fortificationLevel >= eFortificationCitadel) {
             Fort::Img::MoatLip = "SgDnRkMlip.pcx";
+        }
+        if (IsOneOf(tt, eTownCastle, eTownInferno, eTownNecropolis, eTownDungeon, eTownConflux, eTownCove)) {
+            return underground ? "SgRkUgBk.pcx" : "SgRkBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_MAGIC_CLOUDS:
         if (tt == eTownTower) {
-            bgStrPtr = underground ?
+            return underground ?
                 MagicBfUndBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS] : MagicBfBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS];
         }
         break;
@@ -230,204 +334,42 @@ CODE_PATCH GetTownBfBackgr(combatManager* cm) {
         break;
     }
 
-    if (bgStrPtr == nullptr) {
-        bgStrPtr = (underground ? TownBfUndBackgr : TownBfBackgr)[tt];
-    }
-
-    PATCH_RETURN(bgStrPtr, Addr::Bg::END_OF_FUNC);
+    return (underground ? TownBfUndBackgr : TownBfBackgr)[tt];
 }
 
 
-static bool IsCave(const combatManager* cm) {
-    switch (cm->Heroes[0]->type) {
-
-    case OBJECT_CREATURE_BANK: {
-            const int16_t bankType = cm->EventCell->objectIndex;
-            return bankType == BANK_CYCLOPS_STOCKPILE
-                || bankType == BANK_HOTA_PIRATE_CAVERN
-                || bankType == BANK_HOTA_SPIT;
-        }
-    case OBJECT_CREATURE_GENERATOR1: {
-            const int16_t genType = cm->EventCell->objectIndex;
-            return genType == 1 || genType == 9; // Behemoth Crag or Cyclops Cave
-        }
-    case OBJECT_MINE: {
-            const int16_t res = cm->EventCell->objectIndex;
-            return res == CRYSTAL || res == GOLD || res == ABANDONED;
-        }
-    default:
-        break;
-    }
-    return false;
-}
-
-
-static int32_t CaveTerrain(combatManager* cm) {
-    switch (cm->Heroes[0]->type) {
-
-    case OBJECT_CREATURE_BANK:
-        // Creature bank type == 0 means Cyclops Stockpile
-        switch (cm->EventCell->objectIndex) {
-        case BANK_CYCLOPS_STOCKPILE:
-        case BANK_HOTA_PIRATE_CAVERN:
-        case BANK_HOTA_SPIT:
-            if (TTerrainType tt = cm->combatTerrain;
-                tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainHighlands) {
-                return eTerrainDirt; // If terrain type is Grass or Snow, use the Dirt background
-            }
-            else return tt;
-        case BANK_HOTA_BEHOLDERS_SANCTUARY:
-            switch (cm->EventCell->GroundSet) {
-            case eTerrainGrass:
-            case eTerrainSwamp:
-            case eTerrainHighlands:
-                return eTerrainSwamp;
-            case eTerrainSubterranean:
-                return eTerrainSubterranean;
-            default:
-                return eTerrainDirt;
-            }
-        case BANK_HOTA_TEMPLE_OF_THE_SEA:
-            return cm->EventCell->GroundSet;
-        }
-        break;
-
-    case OBJECT_CREATURE_GENERATOR1:
-        // Creature generator types: 1 means Behemoth Crag, 9 means Cyclops Cave
-        if (int16_t genType = cm->EventCell->objectIndex; genType == 1 || genType == 9) {
-            TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
-            // If terrain type is Grass or Snow, change it to the Rough
-            if (tt == eTerrainGrass || tt == eTerrainSnow) { tt = eTerrainRough; };
-            return cm->combatTerrain = tt;
-        }
-        break;
-
-    case OBJECT_MINE:
-        switch (cm->EventCell->objectIndex) {
-        case ABANDONED:
-            return eTerrainSubterranean;
-        case CRYSTAL:
-        case GOLD:
-            TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
-            if (tt == eTerrainGrass || tt == eTerrainSnow || tt == eTerrainSwamp) { tt = eTerrainDirt; };
-            return cm->combatTerrain = tt;
-        }
-        break; // case OBJECT_MINE
-
-    default:
-        break;
-    }
-    return eTerrainNone;
-}
-
-
-static bool IsNearWater(type_point mapPoint) {
-#define IF_WATER_RETURN_TRUE(point) \
-    if (gm->get_cell(point)->GroundSet == eTerrainWater) return true
-
-    const game* gm = *reinterpret_cast<game**>(Addr::GAME_OBJ_PTR);
-
-    if (mapPoint.x > 0) {
-        type_point mapPointLeft = mapPoint;
-        --mapPointLeft.x;
-        IF_WATER_RETURN_TRUE(mapPointLeft);
-    }
-    if (mapPoint.y > 0) {
-        type_point mapPointUp = mapPoint;
-        --mapPointUp.y;
-        IF_WATER_RETURN_TRUE(mapPointUp);
-    }
-    const int32_t mapBorder = gm->worldMap.Size - 1;
-    if (mapPoint.x < mapBorder) {
-        type_point mapPointRight = mapPoint;
-        ++mapPointRight.x;
-        IF_WATER_RETURN_TRUE(mapPointRight);
-    }
-    if (mapPoint.y < mapBorder) {
-        type_point mapPointDown = mapPoint;
-        ++mapPointDown.y;
-        IF_WATER_RETURN_TRUE(mapPointDown);
-    }
-    return false;
-
-#undef IF_WATER_RETURN_TRUE
-}
-
-
-CODE_PATCH GetAreaBfBackgr(EMagicTerrain mt, combatManager* cm) {
-/* input:
-    ECX: type of magic terrain - mt
-    ESI: address of combatManager object - cm
-*/
-    GET_FROM_REG(cm, esi);
-
-    CStrPtr bgStrPtr;
-    const bool underground = (cm->map_point.z != 0);
-
-    if (cm->Heroes[0]->flags & HF_ISINBOAT) {
+static CStrPtr __fastcall GetAreaBfBackgr(combatManager * cm) {
+    if (cm->OnBoats) {
+        const bool magicClouds = cm->magic_terrain == MAGIC_TERRAIN_MAGIC_CLOUDS;
         const hero* enemyHero = cm->Heroes[1];
+
         if (enemyHero && (enemyHero->flags & HF_ISINBOAT)) {
-            bgStrPtr = H3TwoBoatsBackgr; // Set background for battle between two boats
+            return magicClouds ? "CmBkMCBt.pcx" : H3TwoBoatsBackgr; // Set background for battle between two boats
         }
-        else { /* Set background for battle on one boat */
-            bgStrPtr = (mt == MAGIC_TERRAIN_MAGIC_CLOUDS) ? MagicCloudBoatBackgr :
-                underground ? BfUndBackgr[eTerrainWater] : H3BoatDeckBackgr;
-        }
-    }
-    else if (mt > MAGIC_TERRAIN_COAST) {
-        bgStrPtr = ((underground || IsCave(cm)) ? MagicBfUndBackgr : MagicBfBackgr)[mt];
-    }
-    else if (int32_t ctt = CaveTerrain(cm); ctt != eTerrainNone) {
-        cm->magic_terrain = MAGIC_TERRAIN_INVALID;
-        bgStrPtr = BfUndBackgr[ctt];
-    }
-    else if (mt == MAGIC_TERRAIN_COAST) {
-        if (underground) {
-            if (cm->EventCell->GroundSet == eTerrainSubterranean) {
-                cm->combatTerrain = eTerrainSubterranean;
-                cm->magic_terrain = MAGIC_TERRAIN_INVALID;
-                bgStrPtr = UndergrLakeBfBackgr; // Set the battlefield background to Underground Lake
-            }
-            else {
-                bgStrPtr = MagicBfUndBackgr[MAGIC_TERRAIN_COAST];
-            }
-        }
-        else {
-            bgStrPtr = MagicBfBackgr[MAGIC_TERRAIN_COAST];
-        }
-    }
-    else if (underground) {
-        const TTerrainType tt = TTerrainType(cm->EventCell->GroundSet);
-        // When a version other than HotA is running, check whether the field is the coast of an underground sea/lake
-        if (!HotAMode && IsNearWater(cm->map_point)) {
-            if (tt == eTerrainSubterranean) {
-                bgStrPtr = UndergrLakeBfBackgr; // Set the battlefield background to Underground Lake
-            }
-            else {
-                cm->magic_terrain = MAGIC_TERRAIN_COAST;
-                bgStrPtr = MagicBfUndBackgr[MAGIC_TERRAIN_COAST];
-            }
-        }
-        else {
-            cm->combatTerrain = tt;
-            bgStrPtr = BfUndBackgr[tt];
-        }
-    }
-    else if (cm->combatTerrain == eTerrainSubterranean) {
-        bgStrPtr = RedRocksBackgr; // Set the battlefield background to Red Rocks
-    }
-    else {
-        bgStrPtr = nullptr;
+        /* Set background for battle on one boat */
+        return magicClouds ? MagicCloudBoatBackgr : (cm->map_point.z ? BfUndBackgr[eTerrainWater] : H3BoatDeckBackgr);
     }
 
-    if (bgStrPtr != nullptr) {
-        SET_EBX(Addr::Bg::END_OF_FUNC);
+    bool underground = cm->map_point.z || (Combat::Cave && !cm->combatTown);
+
+    if (cm->magic_terrain >= MAGIC_TERRAIN_COAST) {
+        return (underground ? MagicBfUndBackgr : MagicBfBackgr)[cm->magic_terrain];
     }
-    else { // Go to standard H3 procedure for non-magic terrain
-        SET_EBX(Addr::Bg::STD_BF_BG);
-        SET_ECX(cm);
+    if (underground) {
+        if (cm->combatTown) {
+            Combat::BgTerrain = cm->combatTerrain;
+        }
+        if (Combat::BgTerrain == eTerrainSubterranean && cm->EventCell->IsBeachBorder) {
+            return UndergrLakeBfBackgr; // Set the battlefield background to Underground Lake
+        }
+        return BfUndBackgr[Combat::BgTerrain];
     }
-    PATCH_RETURN(bgStrPtr, ebx);
+    if (cm->combatTerrain == eTerrainSubterranean) {
+        return RedRocksBackgr; // Set the battlefield background to Red Rocks
+    }
+
+    RETURN_ADDRESS = 0x46433A; // Go to the H3 instructions for setting the original battlefield background
+    return nullptr;
 }
 
 
@@ -471,28 +413,47 @@ ASM_CODE_PATCH FortSectionImage() {
 }
 
 
-ASM_CODE_PATCH Obstacles_HeroOnBoat() {
-/* input:
-    ECX: address of second hero object
-    ZF:  address of second hero is NULL
-    EDX: constant - hero flag HF_ISINBOAT
-*/
-    __asm {
-        je   OneBoat   // if ECX == 0 (no second hero) => OneBoat
-        test dword ptr[ecx + 0x105], edx // check if the second hero has flag HF_ISINBOAT
-        je   OneBoat   // if the second hero is not on the boat => OneBoat
-        jmp  Addr::Obst::TWO_BOATS // return to the h3 code - handling two boats
-        
-    OneBoat:
-        mov  edx, 0x0C
-        mov  ecx, 5
-        call Addr::FUNC_RANDOM // get a random number in the range [5..0xC]
-        xor  ebx, ebx   // ebx = 0
-        mov  dword ptr[ebp - 0x10], eax // save random number
-        mov  dword ptr[ebp - 0x14], ebx
-        mov  ebx, 0x100 // 1<<8 - water flag
-        jmp  Addr::Obst::STD_PLACEMENT // return to the h3 code
-    }
+#if defined(__GNUG__) || defined(__clang__)
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
+
+static void PatchSetupObstacles_HeroOnBoat(PatcherInstance& p) {
+    using namespace Asm;
+
+    // Addresses inside the function setting obstacles on the battlefield
+    constexpr uintptr_t aCheckBoats   = 0x4662C3;
+    constexpr uintptr_t aTwoBoats     = 0x4662F0;
+    constexpr uintptr_t aCkeckFort    = 0x466330;
+    constexpr uintptr_t aStdPlacement = 0x46634C;
+
+    constexpr int32_t oIgnoreMT = -0x10; // offset of local variable used to ignore magic terrain for obstacle placement
+    constexpr Reg cmbtMgr = EDI; // register containing the address of combatManager object
+    constexpr int32_t oFirstHero = offsetof(combatManager, Heroes); // offset of the first hero object in combatManager
+    constexpr int32_t oSecondHero = oFirstHero + sizeof(hero*); // offset of the first hero object in combatManager
+
+    Sequence seq{
+        ClearReg(EBX), // EBX = 0
+        SetLocalVar(oIgnoreMT, EBX), // set 0 - don't ignore magic terrain
+        JumpIfNotZero(aCkeckFort),   // jump, if battle is not on the water
+
+        SetRegConst(EBX, HF_ISINBOAT),
+        SetRegPtr(ECX, cmbtMgr, oFirstHero),  // ECX = address of the first hero object
+        TestRegPtr(EBX, ECX, offsetof(hero, flags)), // check if the hero is on the boat
+        JumpIfZero(aCkeckFort),      // jump, if the hero is not on the boat
+
+        SetLocalVar(oIgnoreMT, EBX), // set 0x40000 - ignore all magic terrains
+        SetRegPtr(ECX, cmbtMgr, oSecondHero), // ECX = address of the second hero object
+        JumpIfEcxZero(aStdPlacement),
+        TestRegPtr(EBX, ECX, offsetof(hero, flags)), // check if  the second hero is on the boat
+        JumpIfZero(aStdPlacement),   // jump, if the hero is not on the boat
+    };
+	static_assert(seq.Size() == (aTwoBoats - aCheckBoats), "code patch has wrong size");
+
+    seq.Apply(p, aCheckBoats);
+
+	Sequence{ CmpLocalVar(oIgnoreMT, ECX) }.Apply(p, 0x466363); // check if magic terrain should be ignored
+
+    p.WriteByte(0x46636C, 0x7C); // change JE to JL
 }
 
 
@@ -521,18 +482,51 @@ ASM_CODE_PATCH Obstacles_GetInfo() {
 }
 
 
+void WritePseudoFastCall(PatcherInstance & p, uintptr_t insAddr, uintptr_t funcAddr, uintptr_t retAdress) {
+    Asm::Sequence{
+        Asm::PushConst32(retAdress),
+        Asm::Jump(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
+void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, Asm::Reg regArg, uintptr_t retAdress) {
+    using namespace Asm;
+    Sequence{
+        SetReg(ECX, regArg),
+        PushConst32(retAdress),
+        Jump(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
+template<typename F, typename ...Args>
+void WritePseudoFastCall(PatcherInstance& p, uintptr_t callAddr, F* funcAddr, Args... args) {
+    WritePseudoFastCall(p, callAddr, uintptr_t(funcAddr), args...);
+}
+
+
 void BattlefieldPatch(PatcherInstance & p) {
+    /* Combat Terrain */
+    const uintptr_t cmbtTrHookAddr = HotAMode ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
+    WritePseudoFastCall(p, cmbtTrHookAddr, GetCombatTerrain, Asm::ESI, Addr::CT::END_OF_FUNC);
+    if (HotAMode) {
+        WritePseudoFastCall(p, Addr::CT::WOBJ_ENTRY, GetCombatTerrainWaterObj, Asm::ESI, Addr::CT::END_OF_FUNC);
+    }
+
     /* Background */
-    p.WriteJmp(Addr::Bg::GET_TOWN_BF_BG, uintptr_t(GetTownBfBackgr));
-    p.WriteJmp(Addr::Bg::GET_AREA_BF_BG, uintptr_t(GetAreaBfBackgr));
+    WritePseudoFastCall(p, Addr::Bg::FORT_BF_ENTRY, GetFortBfBackgr, Addr::Bg::END_OF_FUNC);
+    WritePseudoFastCall(p, Addr::Bg::AREA_BF_ENTRY, GetAreaBfBackgr, Addr::Bg::END_OF_FUNC);
 
     /* Fortification */
-    p.WriteByte(Addr::Fort::LOOP_JL_ARG, 0xD4ui8); // change of jump address to Addr::Fort::STD_IMG
-    p.WriteJmp(Addr::Fort::IMG_ENTRY,    uintptr_t(FortSectionImage));
+    p.WriteByte(Addr::Fort::LOOP_JL_ARG, 0xD4u); // change of jump address to Addr::Fort::STD_IMG
+    p.WriteJmp(Addr::Fort::IMG_ENTRY,  uintptr_t(FortSectionImage));
 
     /* Obstacles */
-    p.WriteJmp(Addr::Obst::HERO_ON_BOAT, uintptr_t(Obstacles_HeroOnBoat));
-    p.WriteJmp(Addr::PlObst::GET_INFO,   uintptr_t(Obstacles_GetInfo));
+    PatchSetupObstacles_HeroOnBoat(p);
+    p.WriteJmp(Addr::PlObst::GET_INFO, uintptr_t(Obstacles_GetInfo));
     InitializeUndergroundObstacles();
 }
 
@@ -551,7 +545,7 @@ void BattlefieldPatch(PatcherInstance & p) {
 004642BC    jle         004642D4        * If there are no wals, go to CHECK_MAGIC_TERRAIN
 
 Addr::Bg::GET_TOWN_BF_BG:
-004642BE    code patch here --> jump to the function GetTownBfBackgr
+004642BE    code patch here --> jump to the function GetFortBfBackgr
 * original instruction:
 * 004642BE  mov         eax,dword ptr [esi+53C8h]   * EAX = address of the town object
 
@@ -579,16 +573,16 @@ CHECK_BOATS:
 004642F6    mov         edi,dword ptr [eax+105h]    * EDI = hero flags
 004642FC    mov         edx,40000h                  * EDX = HF_ISINBOAT
 00464301    test        edx,edi
-00464303    je          0046431E        * If the hero is not on the boat, go to Addr::Bg::STD_BF_BG
+00464303    je          0046431E        * If the hero is not on the boat, go to STD_BF_BG
 00464305    mov         eax,dword ptr [esi+53D0h]   * EAX = address of the enemy hero object
 0046430B    test        eax,eax
 0046430D    je          0046431E
 0046430F    test        dword ptr [eax+105h],edx    * check the enemy hero's flags
-00464315    je          0046431E        * If the enemy hero is not on the boat, go to Addr::Bg::STD_BF_BG
+00464315    je          0046431E        * If the enemy hero is not on the boat, go to STD_BF_BG
 00464317    mov         eax,66FF5Ch     * EAX = address of the battlefield background with two boats
 0046431C    jmp         0046435E        -> go to Addr::END_OF_FUNC
 
-Addr::Bg::STD_BF_BG:  <- return from the GetAreaBfBackgr function
+STD_BF_BG:  <- return from the GetAreaBfBackgr function
 0046431E    mov         al,byte ptr [esi+53C6h]
 00464324    test        al,al
 00464326    je          0046432F

@@ -38,6 +38,7 @@ Displayed when the battlefield is on the surface, but the terrain type is “sub
 
 ![](CmBkDkUg.bmp "Boat - Underground")
 ![](CmBkMCDk.bmp "Boat - Magic Clouds")
+![](CmBkMCBt.bmp "Two boats - Magic Clouds")
 
 ## Backgrounds of battlefields in underground towns
 

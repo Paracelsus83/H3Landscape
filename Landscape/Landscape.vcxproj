@@ -16,6 +16,7 @@
     <ProjectGuid>{9020E824-A738-4B61-ADEE-51E16E3C2EC2}</ProjectGuid>
     <RootNamespace>Landscape</RootNamespace>
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -54,15 +55,15 @@
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Debug'">
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=_WIN32_WINNT_WINXP;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Release'">
       <DebugInformationFormat>None</DebugInformationFormat>
-      <PreprocessorDefinitions>_USRDLL;_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=_WIN32_WINNT_WINXP;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,6 +93,7 @@ img/CmBkIceUg.bmp;
 img/CmBkLPUg.bmp;
 img/CmBkLkUg.bmp;
 img/CmBkLvUg.bmp;
+img/CmBkMCBt.bmp;
 img/CmBkMCDk.bmp;
 img/CmBkMCUg.bmp;
 img/CmBkMgUg.bmp;
@@ -147,6 +149,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="game_mod\asm_helper.h" />
+    <ClInclude Include="game_mod\asm_patch.hpp" />
     <ClInclude Include="game_mod\battlefield.hpp" />
     <ClInclude Include="game_mod\hota_terrain.hpp" />
     <ClInclude Include="game_mod\img_loader.hpp" />
@@ -164,17 +167,19 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="BeforeResourceCompile">
-    <Exec Command="git describe --tags --abbrev=4 --always" EchoOff="true" IgnoreExitCode="true" ConsoleToMsBuild="true" StandardErrorImportance="low" StandardOutputImportance="low">
+    <Exec Command="git describe --tags --abbrev=4 --always --dirty" EchoOff="true" IgnoreExitCode="true" ConsoleToMsBuild="true" StandardErrorImportance="low" StandardOutputImportance="low">
       <Output TaskParameter="ConsoleOutput" PropertyName="VersionFromGit" />
     </Exec>
     <Message Importance="High" Text="H3Landscape version: $(VersionFromGit)" />
     <PropertyGroup>
       <H3LVersion Condition="$(VersionFromGit.StartsWith('v'))">$(VersionFromGit.Substring(1))</H3LVersion>
       <H3LVersion Condition="!$(VersionFromGit.StartsWith('v'))">$(VersionFromGit)</H3LVersion>
+      <H3LProdVersion Condition="$(VersionFromGit.StartsWith('v'))">$([System.Text.RegularExpressions.Regex]::Match($(VersionFromGit),`\d+\.\d+\.\d+`).Value.Replace('.', ','))</H3LProdVersion>
+      <H3LProdVersion Condition="$(H3LProdVersion)==''">0,0,0</H3LProdVersion>
     </PropertyGroup>
     <ItemGroup>
       <ResourceCompile>
-        <PreprocessorDefinitions>_USING_V110_SDK71_;%(PreprocessorDefinitions);H3LANDSCAPE_VERSION=$(H3LVersion)</PreprocessorDefinitions>
+        <PreprocessorDefinitions>_USING_V110_SDK71_;%(PreprocessorDefinitions);H3LANDSCAPE_VERSION=$(H3LVersion);H3L_PROD_VERSION=$(H3LProdVersion),0</PreprocessorDefinitions>
       </ResourceCompile>
     </ItemGroup>
   </Target>

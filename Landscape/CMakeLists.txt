@@ -15,6 +15,7 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
 	game_mod/asm_helper.h
+	game_mod/asm_patch.hpp
 	game_mod/battlefield.hpp
 	game_mod/hota_terrain.hpp
 	game_mod/img_loader.hpp
@@ -42,6 +43,7 @@ set(IMAGE_FILES
 	img/CmBkLPUg.bmp
 	img/CmBkLkUg.bmp
 	img/CmBkLvUg.bmp
+	img/CmBkMCBt.bmp
 	img/CmBkMCDk.bmp
 	img/CmBkMCUg.bmp
 	img/CmBkMgUg.bmp
