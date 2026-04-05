@@ -3,7 +3,24 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
-## [0.1.0]
+## [0.1.0] - 2026-04-05
+
+### Game modification
+- When starting a new game (while the map is loading), the appearance of certain objects on the adventure map is adjusted to better match the terrain type:
+  - For maps in the “Restoration of Erathia” version:
+    - Any Abandoned Mine located on snow, lava, or underground, but not on magical terrain, is replaced with an equivalent from “Armageddon's Blade”,
+    - Any Trading Post located on snow, but not on magical terrain, is replaced with a snow equivalent from “Armageddon's Blade”;
+  - For maps in the "Shadow of Death" or earlier version, loaded in HotA and ERA games, the following objects located on snow, but not on magical terrain, are replaced with their snow equivalents from HotA/ERA:
+    - Garrison {only in ERA},
+    - Hill Fort,
+    - Idol of Fortune,
+    - Library of Enlightenment,
+    - Tavern,
+    - Den of Thieves,
+    - Learning Stone,
+    - Tree of Knowledge,
+    - Subterranean Gate,
+    - Witch Hut.
 
 ### Modified components
 - The new MSI installer — created using the WiX Toolset.
@@ -21,6 +38,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ### Game modification
 - Changed algorithm for determining the battlefield background:
   - The image `CmBkMCBt.pcx` is used as the background for the battlefield on two boats on magical clouds,
+  - The algorithm for selecting the background in objects classified as caves has been unified - it works the same way in SoD, HotA, and WoG,
   - For battles in water objects located on land:
     - Shipwreck uses a background that matches the type of terrain it is located on,
     - Temple of the Sea (considered a cave) uses a background that matches the type of terrain it is located on, except for lava, for which the “dirt” background (`CmBkDrUg.pcx`) is used,
@@ -71,7 +89,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
     - on “subterranean” or magical terrain, a battlefield background matching the terrain is used,
     - for other terrain types, the “dirt” battlefield background (`CmBkDrUg.pcx`) is used;
 - Changed algorithm for selecting obstacles on the battlefield:
-  - For underground battles, some obstacles containing tree trunks are replaced with their underground counterparts.
+  - For underground battles, some obstacles containing tree trunks are replaced with their underground equivalents.
 
 
 ## [0.0.3] - 2026-01-01

@@ -1,4 +1,5 @@
 #include <nh3api/hd_mod.hpp>
+#include "game_mod/adv_map.hpp"
 #include "game_mod/battlefield.hpp"
 #include "game_mod/img_loader.hpp"
 
@@ -21,6 +22,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
         PatcherInstance* instance = patcher->CreateInstance("HD.Plugin.Landscape");
         if (instance) {
             ImgLoaderPatch(*instance, hModule);
+            AdvMapPatch(*instance);
             BattlefieldPatch(*instance);
         }
     }

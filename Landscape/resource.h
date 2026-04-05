@@ -24,7 +24,7 @@
 #endif
 
 #ifndef H3L_PROD_VERSION
-#	define H3L_PROD_VERSION	0,0,5,0
+#	define H3L_PROD_VERSION	0,1,0,0
 #endif
 #ifndef H3L_DLL_VERSION
 #	define H3L_DLL_VERSION H3L_PROD_VERSION

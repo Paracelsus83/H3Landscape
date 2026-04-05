@@ -13,6 +13,9 @@
     <ClInclude Include="resource.h">
       <Filter>dll</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\adv_map.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
     <ClInclude Include="game_mod\asm_helper.h">
       <Filter>game_mod</Filter>
     </ClInclude>
@@ -31,10 +34,16 @@
     <ClInclude Include="game_mod\obstacles.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\mode.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>dll</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\adv_map.cpp">
+      <Filter>game_mod</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\battlefield.cpp">
       <Filter>game_mod</Filter>

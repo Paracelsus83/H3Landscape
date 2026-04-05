@@ -14,6 +14,8 @@ constexpr EMagicTerrain MAGIC_TERRAIN_FIELDS_GLORY = static_cast<EMagicTerrain>(
 
 constexpr uint32_t MAX_HOTA_MAGIC_TERRAINS = 14;
 
+constexpr TAdventureObjectType OBJECT_HOTA_MAGIC_TERRAIN = static_cast<TAdventureObjectType>(141);
+
 constexpr TTownType eTownCove = static_cast<TTownType>(9);
 constexpr TTownType eTownFactory = static_cast<TTownType>(10);
 constexpr TTownType eTownBulwark = static_cast<TTownType>(11);

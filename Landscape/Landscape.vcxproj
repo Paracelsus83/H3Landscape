@@ -68,6 +68,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
+      <GenerateDebugInformation Condition="'$(Configuration)'=='Debug'">DebugFull</GenerateDebugInformation>
     </Link>
     <Link Condition="'$(Configuration)'=='Release'">
       <OptimizeReferences>true</OptimizeReferences>
@@ -148,16 +149,19 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="game_mod\adv_map.hpp" />
     <ClInclude Include="game_mod\asm_helper.h" />
     <ClInclude Include="game_mod\asm_patch.hpp" />
     <ClInclude Include="game_mod\battlefield.hpp" />
     <ClInclude Include="game_mod\hota_terrain.hpp" />
     <ClInclude Include="game_mod\img_loader.hpp" />
+    <ClInclude Include="game_mod\mode.hpp" />
     <ClInclude Include="game_mod\obstacles.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="game_mod\adv_map.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />
     <ClCompile Include="game_mod\obstacles.cpp" />
