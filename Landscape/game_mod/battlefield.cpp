@@ -3,6 +3,8 @@
 #include "battlefield.hpp"
 #include "asm_helper.h"
 #include "asm_patch.hpp"
+#include "mode.hpp"
+#include "types.hpp"
 #include "hota_terrain.hpp"
 #include "obstacles.hpp"
 
@@ -37,8 +39,6 @@ namespace PlObst { // Addresses inside the function placing one obstacle on the 
 
 } // namespace Addr
 
-
-typedef const char* CStrPtr;
 
 inline CStrPtr StrAddr(uintptr_t addr) { return reinterpret_cast<CStrPtr>(addr); }
 
@@ -159,9 +159,6 @@ namespace Img { /* Fortification image file names */
 } // namespace Fort
 
 
-extern bool HotAMode;
-
-
 template<typename LExpr, typename ...RExpr>
 inline constexpr bool IsOneOf(LExpr lexpr, RExpr... rexpr) {
     return ((lexpr == rexpr) || ...);
@@ -187,8 +184,7 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
         break;
 
     case OBJECT_CREATURE_GENERATOR1:
-        // Creature generator types: 1 means Behemoth Crag, 9 means Cyclops Cave
-        if (IsOneOf(cm->EventCell->objectIndex, 1, 9)) {
+        if (IsOneOf(cm->EventCell->objectIndex, GENERATOR_BEHEMOTH, GENERATOR_CYCLOPS)) {
             Combat::Cave = true;
             if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
                 Combat::BgTerrain = eTerrainRough;
@@ -211,6 +207,11 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
             }
             break;
         }
+        break;
+
+    case OBJECT_ABANDONED_MINE2:
+        Combat::Cave = true;
+        Combat::BgTerrain = eTerrainSubterranean;
         break;
 
     default:
@@ -386,7 +387,7 @@ ASM_CODE_PATCH FortSectionImage() {
         je   MoatLip
         jmp  Addr::Fort::STD_IMG
     Moat:
-        cmp  dl, [HotAMode]
+        cmp  dl, [Mode::HotA]
         jne  MoatImg // if the game is HotA, skip checking RoE/AB.
         mov  ecx, [gpGame]
         // Check if the game is in RoE or AB mode
@@ -447,11 +448,11 @@ static void PatchSetupObstacles_HeroOnBoat(PatcherInstance& p) {
         TestRegPtr(EBX, ECX, offsetof(hero, flags)), // check if  the second hero is on the boat
         JumpIfZero(aStdPlacement),   // jump, if the hero is not on the boat
     };
-	static_assert(seq.Size() == (aTwoBoats - aCheckBoats), "code patch has wrong size");
+    static_assert(seq.Size() == (aTwoBoats - aCheckBoats), "code patch has wrong size");
 
     seq.Apply(p, aCheckBoats);
 
-	Sequence{ CmpLocalVar(oIgnoreMT, ECX) }.Apply(p, 0x466363); // check if magic terrain should be ignored
+    Sequence{ CmpLocalVar(oIgnoreMT, ECX) }.Apply(p, 0x466363); // check if magic terrain should be ignored
 
     p.WriteByte(0x46636C, 0x7C); // change JE to JL
 }
@@ -482,43 +483,17 @@ ASM_CODE_PATCH Obstacles_GetInfo() {
 }
 
 
-void WritePseudoFastCall(PatcherInstance & p, uintptr_t insAddr, uintptr_t funcAddr, uintptr_t retAdress) {
-    Asm::Sequence{
-        Asm::PushConst32(retAdress),
-        Asm::Jump(funcAddr)
-    }
-    .Apply(p, insAddr);
-}
-
-
-void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, Asm::Reg regArg, uintptr_t retAdress) {
-    using namespace Asm;
-    Sequence{
-        SetReg(ECX, regArg),
-        PushConst32(retAdress),
-        Jump(funcAddr)
-    }
-    .Apply(p, insAddr);
-}
-
-
-template<typename F, typename ...Args>
-void WritePseudoFastCall(PatcherInstance& p, uintptr_t callAddr, F* funcAddr, Args... args) {
-    WritePseudoFastCall(p, callAddr, uintptr_t(funcAddr), args...);
-}
-
-
 void BattlefieldPatch(PatcherInstance & p) {
     /* Combat Terrain */
-    const uintptr_t cmbtTrHookAddr = HotAMode ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
-    WritePseudoFastCall(p, cmbtTrHookAddr, GetCombatTerrain, Asm::ESI, Addr::CT::END_OF_FUNC);
-    if (HotAMode) {
-        WritePseudoFastCall(p, Addr::CT::WOBJ_ENTRY, GetCombatTerrainWaterObj, Asm::ESI, Addr::CT::END_OF_FUNC);
+    const uintptr_t cmbtTrHookAddr = Mode::HotA ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
+    Asm::WritePseudoFastCall(p, cmbtTrHookAddr, GetCombatTerrain, Asm::ESI, Addr::CT::END_OF_FUNC);
+    if (Mode::HotA) {
+        Asm::WritePseudoFastCall(p, Addr::CT::WOBJ_ENTRY, GetCombatTerrainWaterObj, Asm::ESI, Addr::CT::END_OF_FUNC);
     }
 
     /* Background */
-    WritePseudoFastCall(p, Addr::Bg::FORT_BF_ENTRY, GetFortBfBackgr, Addr::Bg::END_OF_FUNC);
-    WritePseudoFastCall(p, Addr::Bg::AREA_BF_ENTRY, GetAreaBfBackgr, Addr::Bg::END_OF_FUNC);
+    Asm::WritePseudoFastCall(p, Addr::Bg::FORT_BF_ENTRY, GetFortBfBackgr, Addr::Bg::END_OF_FUNC);
+    Asm::WritePseudoFastCall(p, Addr::Bg::AREA_BF_ENTRY, GetAreaBfBackgr, Addr::Bg::END_OF_FUNC);
 
     /* Fortification */
     p.WriteByte(Addr::Fort::LOOP_JL_ARG, 0xD4u); // change of jump address to Addr::Fort::STD_IMG

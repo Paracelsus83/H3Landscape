@@ -92,6 +92,11 @@ namespace Asm {
         }
     };
 
+	/// nop
+    class NoOperation : public AbsoluteInstr {
+        [[maybe_unused]] const uint8_t opcode = 0x90u;
+    };
+
     /// mov dstReg, srcReg
     struct SetReg : public RegRegInstr {
         constexpr explicit SetReg(Reg dstReg, Reg srcReg) : RegRegInstr(0x89u, dstReg, srcReg) {}
@@ -221,5 +226,40 @@ namespace Asm {
     };
 
 #pragma pack(pop)
+
+
+inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, Reg regArg) {
+    Sequence{
+        SetReg(ECX, regArg),
+        Call(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
+inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, uintptr_t retAdress) {
+    Sequence{
+        PushConst32(retAdress),
+        Jump(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
+inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, Reg regArg, uintptr_t retAdress) {
+    Sequence{
+        SetReg(ECX, regArg),
+        PushConst32(retAdress),
+        Jump(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
+template<typename F, typename ...Args>
+inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t callAddr, F* funcAddr, Args... args) {
+    WritePseudoFastCall(p, callAddr, uintptr_t(funcAddr), args...);
+}
+
 
 } // namespace Asm

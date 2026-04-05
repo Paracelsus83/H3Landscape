@@ -3,7 +3,10 @@
 #include "game_mod/img_loader.hpp"
 
 
-bool HotAMode = false;
+namespace Mode {
+    bool HotA = false;
+    bool ERA = false;
+}
 
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
@@ -12,7 +15,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
         if (patcher == nullptr) return FALSE;
 
         const HD_game_version gameVersion = getHDModEXEVersion(patcher);
-        HotAMode = (gameVersion == 0) || (gameVersion & HD_HOTA) != 0;
+        Mode::HotA = !gameVersion || (gameVersion & HD_HOTA);
+        Mode::ERA = gameVersion & HD_ERA;
 
         PatcherInstance* instance = patcher->CreateInstance("HD.Plugin.Landscape");
         if (instance) {
