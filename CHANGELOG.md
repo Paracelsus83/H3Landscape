@@ -3,6 +3,13 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.1.1]
+
+### Added game files
+- New image (.pcx file in `Landscape.lod` archive):
+  - `CmBkDeU.bmp` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.bmp`).
+
+
 ## [0.1.0] - 2026-04-05
 
 ### Game modification

@@ -54,7 +54,7 @@ CStrPtr const RedRocksBackgr = "CmBkRedMt.pcx";
 /* Backgrounds of underground battlefields */
 const CStrPtr BfUndBackgr[MAX_HOTA_TERRAIN_TYPES] = {
     /* eTerrainDirt    */ "CmBkDrUg.pcx",
-    /* eTerrainSand    */ "CmBkDesUg.pcx",
+    /* eTerrainSand    */ "CmBkDeU.pcx",
     /* eTerrainGrass   */ "CmBkGrUg.pcx",
     /* eTerrainSnow    */ "CmBkSnUg.pcx",
     /* eTerrainSwamp   */ "CmBkSwUg.pcx",

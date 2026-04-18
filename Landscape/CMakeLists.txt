@@ -33,7 +33,7 @@ set(RESOURCE_FILES
 set(IMAGE_FILES
 	img/CmBkCFUg.bmp
 	img/CmBkCstUg.bmp
-	img/CmBkDesUg.bmp
+	img/CmBkDeU.bmp
 	img/CmBkDkUg.bmp
 	img/CmBkDrUg.bmp
 	img/CmBkDunUg.bmp

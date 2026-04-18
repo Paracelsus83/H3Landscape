@@ -3,7 +3,7 @@
 ## Backgrounds of underground battlefields
 
 ![](CmBkDrUg.bmp "Dirt")
-![](CmBkDesUg.bmp "Sand")
+![](CmBkDeU.bmp "Sand (by Aleksey Palko)")
 ![](CmBkGrUg.bmp "Grass")
 ![](CmBkSnUg.bmp "Snow")
 ![](CmBkSwUg.bmp "Swamp")
