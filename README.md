@@ -13,8 +13,10 @@ First and foremost, it adds a lot of new images of underground battlefields.
 
 - [Full list of changes to the game introduced by this addon](CHANGELOG.md)
 - [Full list of new battlefield background images](Landscape/img/Readme.md)
+- [Full list of new sprites of adventure map objects](Landscape/sprites/adv_obj/Readme.md)
 
-Compatible with HoMM3 Complete edition and [Horn of the Abyss](https://h3hota.com/en/documentation) 1.8.0.
+
+Compatible with HoMM3 Complete edition, [Horn of the Abyss](https://h3hota.com/en/documentation) 1.8.0 and [ERA 3](https://heroes3wog.net/era-3/)
 
 ## Download and installation
 

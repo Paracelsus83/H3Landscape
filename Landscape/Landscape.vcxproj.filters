@@ -16,6 +16,9 @@
     <ClInclude Include="game_mod\adv_map.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\adv_mt.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
     <ClInclude Include="game_mod\asm_helper.h">
       <Filter>game_mod</Filter>
     </ClInclude>
@@ -43,6 +46,9 @@
       <Filter>dll</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\adv_map.cpp">
+      <Filter>game_mod</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\adv_mt.cpp">
       <Filter>game_mod</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\battlefield.cpp">

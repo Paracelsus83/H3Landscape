@@ -3,11 +3,41 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
-## [0.1.1]
+## [0.1.1] - 2026-05-03
 
 ### Added game files
 - New image (.pcx file in `Landscape.lod` archive):
   - `CmBkDeU.bmp` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.bmp`).
+- New sprites of adventure map objects (.def file in `Landscape.lod` archive):
+  - `Sanct_Sd.def` - Beholders' Sanctuary on land,
+  - `UtopiaSn.def` - Dragon Utopia on snow,
+  - `GoRsnow.def`  - Garden of Revelation on snow,
+  - `GoRlava.def`  - Garden of Revelation on lava and in underground,
+  - `AVXhilSd.def` - Hill Fort on sand,
+  - `AVXhilU0.def` - Hill Fort in underground,
+  - `HAPCavSn.def` - Pirate Cavern on snow,
+  - `AVXruiSn.def` - Ruins on snow,
+  - `AVXstbl1.def` - Stables on snow,
+  - `AVStmpl1.def` - Temple on snow,
+  - `AVXtrek3.def` - Tree of Knowledge on rough and wasteland,
+  - `AVXtrkLv.def` - Tree of Knowledge on lava and in underground,
+  - `AVSuniv1.def` - University on snow,
+  - `AVMwwhRg.def` - Water Wheel on rough and wasteland and in underground.
+
+### Game modification
+- When starting a new game, the appearance of certain objects on the adventure map is adjusted to better match the terrain type:
+  - Beholders' Sanctuary on land,
+  - Dragon Utopia on snow,
+  - Garden of Revelation on snow / lava / in underground,
+  - Hill Fort on sand / in underground,
+  - Pirate Cavern on snow,
+  - Ruins on snow,
+  - Stables on snow,
+  - Temple on snow,
+  - Tree of Knowledge on rough / wasteland / lava / in underground,
+  - University on snow,
+  - Water Wheel on rough / wasteland / in underground;
+- The appearance of garrisons is no longer adjusted to snow terrain (removal of a feature introduced in version 0.1.0).
 
 
 ## [0.1.0] - 2026-04-05

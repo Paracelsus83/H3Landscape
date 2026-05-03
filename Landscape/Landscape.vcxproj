@@ -35,7 +35,7 @@
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0@AppPath)</H3InstallationPath>
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\HotA + HD_is1@Inno Setup: App Path)</H3InstallationPath>
     <AddonInstallationPath Condition="'$(H3InstallationPath)'!=''">$(H3InstallationPath)\_HD3_Data\Packs\$(TargetName)</AddonInstallationPath>
-    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp sprites\obstacles\*.def</BuildLodCommand>
+    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp sprites\adv_obj\*.def sprites\obstacles\*.def</BuildLodCommand>
   </PropertyGroup>
   <PropertyGroup Condition="$(H3InstallationPath)==''">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -80,7 +80,7 @@
       <Inputs>
 img/CmBkCFUg.bmp;
 img/CmBkCstUg.bmp;
-img/CmBkDesUg.bmp;
+img/CmBkDeU.bmp;
 img/CmBkDkUg.bmp;
 img/CmBkDrUg.bmp;
 img/CmBkDunUg.bmp;
@@ -126,6 +126,20 @@ img/SgRkUgBk.bmp;
 img/SgRmUgBk.bmp;
 img/SgStUgBk.bmp;
 img/SgTwUgBk.bmp;
+sprites/adv_obj/AVMwwhRg.def;
+sprites/adv_obj/AVStmpl1.def;
+sprites/adv_obj/AVSuniv1.def;
+sprites/adv_obj/AVXhilSd.def;
+sprites/adv_obj/AVXhilU0.def;
+sprites/adv_obj/AVXruiSn.def;
+sprites/adv_obj/AVXstbl1.def;
+sprites/adv_obj/AVXtrek3.def;
+sprites/adv_obj/AVXtrkLv.def;
+sprites/adv_obj/GoRlava.def;
+sprites/adv_obj/GoRsnow.def;
+sprites/adv_obj/HAPCavSn.def;
+sprites/adv_obj/Sanct_Sd.def;
+sprites/adv_obj/UtopiaSn.def;
 sprites/obstacles/ObBDt1Ug.def;
 sprites/obstacles/ObDtS3Ug.def;
 sprites/obstacles/ObDtS4Ug.def;
@@ -150,6 +164,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="game_mod\adv_map.hpp" />
+    <ClInclude Include="game_mod\adv_mt.hpp" />
     <ClInclude Include="game_mod\asm_helper.h" />
     <ClInclude Include="game_mod\asm_patch.hpp" />
     <ClInclude Include="game_mod\battlefield.hpp" />
@@ -162,6 +177,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game_mod\adv_map.cpp" />
+    <ClCompile Include="game_mod\adv_mt.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />
     <ClCompile Include="game_mod\obstacles.cpp" />

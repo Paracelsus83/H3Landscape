@@ -9,6 +9,7 @@ endif()
 set(SOURCE_FILES
 	dllmain.cpp
 	game_mod/adv_map.cpp
+	game_mod/adv_mt.cpp
 	game_mod/battlefield.cpp
 	game_mod/img_loader.cpp
 	game_mod/obstacles.cpp
@@ -16,6 +17,7 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
 	game_mod/adv_map.hpp
+	game_mod/adv_mt.hpp
 	game_mod/asm_helper.h
 	game_mod/asm_patch.hpp
 	game_mod/battlefield.hpp
@@ -82,6 +84,20 @@ set(IMAGE_FILES
 )
 
 set(SPRITE_FILES
+	sprites/adv_obj/AVMwwhRg.def
+	sprites/adv_obj/AVStmpl1.def
+	sprites/adv_obj/AVSuniv1.def
+	sprites/adv_obj/AVXhilSd.def
+	sprites/adv_obj/AVXhilU0.def
+	sprites/adv_obj/AVXruiSn.def
+	sprites/adv_obj/AVXstbl1.def
+	sprites/adv_obj/AVXtrek3.def
+	sprites/adv_obj/AVXtrkLv.def
+	sprites/adv_obj/GoRlava.def
+	sprites/adv_obj/GoRsnow.def
+	sprites/adv_obj/HAPCavSn.def
+	sprites/adv_obj/Sanct_Sd.def
+	sprites/adv_obj/UtopiaSn.def
 	sprites/obstacles/ObBDt1Ug.def
 	sprites/obstacles/ObDtS3Ug.def
 	sprites/obstacles/ObDtS4Ug.def

@@ -228,6 +228,14 @@ namespace Asm {
 #pragma pack(pop)
 
 
+inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr) {
+    Sequence{
+        Call(funcAddr)
+    }
+    .Apply(p, insAddr);
+}
+
+
 inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t funcAddr, Reg regArg) {
     Sequence{
         SetReg(ECX, regArg),
