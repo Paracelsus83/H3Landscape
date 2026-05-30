@@ -3,11 +3,18 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.1.2] - 2026-06-01
+
+### Added game files
+- Improved/fixed image:
+  - `SgFFBack.pcx` - background used during the siege of Inferno on the fiery fields;
+
+
 ## [0.1.1] - 2026-05-03
 
 ### Added game files
 - New image (.pcx file in `Landscape.lod` archive):
-  - `CmBkDeU.bmp` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.bmp`).
+  - `CmBkDeU.pcx` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.bmp`);
 - New sprites of adventure map objects (.def file in `Landscape.lod` archive):
   - `Sanct_Sd.def` - Beholders' Sanctuary on land,
   - `UtopiaSn.def` - Dragon Utopia on snow,
