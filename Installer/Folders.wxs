@@ -38,6 +38,8 @@
 			<Directory Id="INSTALLFOLDER" Name="Heroes of Might and Magic III" />
 		</StandardDirectory>
 
+		<StandardDirectory Id="DesktopFolder" />
+
 		<InstallUISequence>
 			<Custom Action="AssignPath4" After="AppSearch" Condition="INSTALL_PATH_HOTA" />
 			<Custom Action="AssignPath3" After="AssignPath4" Condition="INSTALL_PATH_GOG_X86" />

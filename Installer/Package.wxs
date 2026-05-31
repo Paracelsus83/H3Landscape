@@ -27,12 +27,15 @@
 		</DirectoryRef>
 
 		<Feature Id="Main">
-			<ComponentGroupRef Id="H3LComponents" />
+			<ComponentGroupRef Id="H3L_Base_Components" />
+		</Feature>
+		<Feature Id="HotA">
+			<ComponentGroupRef Id="H3L_HotA_Components" />
 		</Feature>
 
 		<CustomAction Id="Patch" FileRef="PatcherExe" ExeCommand="" Return="ignore" Execute="deferred" Impersonate="no" />
 		<InstallExecuteSequence>
-			<Custom Action="Patch" After="InstallFiles" Condition="NOT Installed" />
+			<Custom Action="Patch" After="InstallFiles" Condition="INSTALL_PATH_HOTA" />
 		</InstallExecuteSequence>
 	</Package>
 </Wix>
