@@ -113,6 +113,7 @@ static uint16_t __fastcall GetOrCreateTypeId(
 
     CObjectType& newObjType = map.ObjectTypes.emplace_back(objType);
     newObjType.Height = (Mode::ERA && altInfo.eraHeight) ? altInfo.eraHeight : altInfo.height;
+    newObjType.TerrainMask = exe_bitset<10>(1ULL << terType);
 
     std::string_view imageName = (Mode::ERA && !altInfo.eraImageName.empty()) ?
         altInfo.eraImageName : altInfo.imageName;
@@ -288,7 +289,7 @@ static void __fastcall SavedMap_LoadSprites(NewfullMap& map) {
 }
 
 
-static int __fastcall ReadString(TGzFile& infile, exe_string& str) {
+static int __fastcall ReadString(TAbstractFile& infile, exe_string& str) {
     uint16_t strLength;
     if (infile.read(&strLength, 2) < 2) {
         return -1;
@@ -306,7 +307,7 @@ static int __fastcall ReadString(TGzFile& infile, exe_string& str) {
 }
 
 
-static int __fastcall WriteString(TGzFile& outfile, const exe_string& str) {
+static int __fastcall WriteString(TAbstractFile& outfile, const exe_string& str) {
     int strLength = str.size();
     if (outfile.write(&strLength, 2) < 2) {
         return -1;

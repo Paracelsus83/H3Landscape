@@ -159,12 +159,6 @@ namespace Img { /* Fortification image file names */
 } // namespace Fort
 
 
-template<typename LExpr, typename ...RExpr>
-inline constexpr bool IsOneOf(LExpr lexpr, RExpr... rexpr) {
-    return ((lexpr == rexpr) || ...);
-}
-
-
 static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
     Combat::Cave = false;
     Combat::BgTerrain = TTerrainType(cm->EventCell->GroundSet);
