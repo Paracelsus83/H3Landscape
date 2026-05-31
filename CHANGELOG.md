@@ -8,6 +8,42 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ### Added game files
 - Improved/fixed image:
   - `SgFFBack.pcx` - background used during the siege of Inferno on the fiery fields;
+- New town sprites on the adventure map - for various types of terrain:
+  - Castle on a snow:
+    - `AVCCasVS.def` - village,
+    - `AVCCasFS.def` - fort,
+    - `AVCCasCS.def` - citadel,
+    - `AVCCasXS.def` - castle,
+    - `AVCCasZS.def` - capitol;
+  - Inferno on a snow:
+    - `AVCInfVS.def` - village,
+    - `AVCInfFS.def` - fort,
+    - `AVCInfCS.def` - citadel,
+    - `AVCInfXS.def` - castle,
+    - `AVCInfZS.def` - capitol;
+  - Necropolis on a snow:
+    - `AVCNecVS.def` - village,
+    - `AVCNecFS.def` - fort,
+    - `AVCNecCS.def` - citadel,
+    - `AVCNecXS.def` - castle,
+    - `AVCNecZS.def` - capitol;
+  - Stronghold on a snow:
+    - `AVCStrCS.def` - village,
+    - `AVCStrFS.def` - fort,
+    - `AVCStrVS.def` - citadel,
+    - `AVCStrXS.def` - castle,
+    - `AVCStrZS.def` - capitol;
+  - Tower on a grass/swamp/highlands:
+    - `AVCTowCG.def` - village,
+    - `AVCTowFG.def` - fort,
+    - `AVCTowVG.def` - citadel,
+    - `AVCTowXG.def` - castle,
+    - `AVCTowZG.def` - capitol.
+
+### Game modification
+- Changed algorithm for selecting the town's appearance on the adventure map:
+  - Snowy versions of the sprites are used for the Castle, Inferno, Necropolis amd Stronghold located on snow and cracked ice,
+  - Grassy versions of the sprites are used for the Tower located on grass, swamp, highlands, magic plains, clover field, and holy ground.
 
 
 ## [0.1.1] - 2026-05-03

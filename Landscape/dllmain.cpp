@@ -23,6 +23,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
         if (instance) {
             ImgLoaderPatch(*instance, hModule);
             AdvMapPatch(*instance);
+            AdvMapTownPatch(*instance);
             BattlefieldPatch(*instance);
         }
     }

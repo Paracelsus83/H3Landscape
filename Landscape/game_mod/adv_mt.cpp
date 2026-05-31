@@ -1,3 +1,5 @@
+#include <nh3api/core/town.hpp>
+
 #include "adv_mt.hpp"
 #include "hota_terrain.hpp"
 
@@ -37,6 +39,32 @@ TerrainType8 __fastcall GetTerrainType(const NewfullMap& map, const CObject& obj
     const NewmapCell* cells = map.cellData + (obj.y + obj.z * map.Size) * map.Size;
     const int startX = std::max(0, obj.x - width + 2);
     const int endX = std::min(obj.x + 1, map.Size);
+
+    const auto& fCell = cells[startX];
+    TerrainType8 terType = CellMagicTerrain(fCell);
+    if (terType < 0) {
+        terType = fCell.GroundSet;
+    }
+
+    for (int x = startX + 1; x < endX; ++x) {
+        const auto& cell = cells[x];
+        const TerrainType8 specTerType = CellMagicTerrain(cell);
+
+        if (specTerType < 0) {
+            if (cell.GroundSet != terType) return eTerrainNone;
+        }
+        else if (specTerType != terType) {
+            return eTerrainNone;
+        }
+    }
+    return terType;
+}
+
+
+TerrainType8 __fastcall GetTerrainType(const NewfullMap& map, const town& tw) {
+    const NewmapCell* cells = map.cellData + (tw.mapY + tw.mapZ * map.Size) * map.Size;
+    const int startX = std::max(0, tw.mapX - 2);
+    const int endX = std::min(tw.mapX + 3, map.Size);
 
     const auto& fCell = cells[startX];
     TerrainType8 terType = CellMagicTerrain(fCell);

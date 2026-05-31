@@ -28,16 +28,16 @@
     <ClInclude Include="game_mod\battlefield.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
-    <ClInclude Include="game_mod\img_loader.hpp">
-      <Filter>game_mod</Filter>
-    </ClInclude>
     <ClInclude Include="game_mod\hota_terrain.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
-    <ClInclude Include="game_mod\obstacles.hpp">
+    <ClInclude Include="game_mod\img_loader.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
     <ClInclude Include="game_mod\mode.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
+    <ClInclude Include="game_mod\obstacles.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
   </ItemGroup>
@@ -46,6 +46,9 @@
       <Filter>dll</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\adv_map.cpp">
+      <Filter>game_mod</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\adv_map_town.cpp">
       <Filter>game_mod</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\adv_mt.cpp">

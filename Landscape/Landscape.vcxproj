@@ -35,7 +35,7 @@
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\WOW6432Node\New World Computing\Heroes of Might and Magic® III\1.0@AppPath)</H3InstallationPath>
     <H3InstallationPath Condition="'$(H3InstallationPath)'==''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\HotA + HD_is1@Inno Setup: App Path)</H3InstallationPath>
     <AddonInstallationPath Condition="'$(H3InstallationPath)'!=''">$(H3InstallationPath)\_HD3_Data\Packs\$(TargetName)</AddonInstallationPath>
-    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp sprites\adv_obj\*.def sprites\obstacles\*.def</BuildLodCommand>
+    <BuildLodCommand>mmarch.exe create $(TargetName).lod h3lod ..\LodBuild img\*.bmp sprites\adv_obj\*.def sprites\adv_towns\*.def sprites\obstacles\*.def</BuildLodCommand>
   </PropertyGroup>
   <PropertyGroup Condition="$(H3InstallationPath)==''">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -140,6 +140,31 @@ sprites/adv_obj/GoRsnow.def;
 sprites/adv_obj/HAPCavSn.def;
 sprites/adv_obj/Sanct_Sd.def;
 sprites/adv_obj/UtopiaSn.def;
+sprites/adv_towns/AVCCasCS.def;
+sprites/adv_towns/AVCCasFS.def;
+sprites/adv_towns/AVCCasVS.def;
+sprites/adv_towns/AVCCasXS.def;
+sprites/adv_towns/AVCCasZS.def;
+sprites/adv_towns/AVCInfCS.def;
+sprites/adv_towns/AVCInfFS.def;
+sprites/adv_towns/AVCInfVS.def;
+sprites/adv_towns/AVCInfXS.def;
+sprites/adv_towns/AVCInfZS.def;
+sprites/adv_towns/AVCNecCS.def;
+sprites/adv_towns/AVCNecFS.def;
+sprites/adv_towns/AVCNecVS.def;
+sprites/adv_towns/AVCNecXS.def;
+sprites/adv_towns/AVCNecZS.def;
+sprites/adv_towns/AVCStrCS.def;
+sprites/adv_towns/AVCStrFS.def;
+sprites/adv_towns/AVCStrVS.def;
+sprites/adv_towns/AVCStrXS.def;
+sprites/adv_towns/AVCStrZS.def;
+sprites/adv_towns/AVCTowCG.def;
+sprites/adv_towns/AVCTowFG.def;
+sprites/adv_towns/AVCTowVG.def;
+sprites/adv_towns/AVCTowXG.def;
+sprites/adv_towns/AVCTowZG.def;
 sprites/obstacles/ObBDt1Ug.def;
 sprites/obstacles/ObDtS3Ug.def;
 sprites/obstacles/ObDtS4Ug.def;
@@ -177,6 +202,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game_mod\adv_map.cpp" />
+    <ClCompile Include="game_mod\adv_map_town.cpp" />
     <ClCompile Include="game_mod\adv_mt.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />

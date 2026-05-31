@@ -98,6 +98,31 @@ set(SPRITE_FILES
 	sprites/adv_obj/HAPCavSn.def
 	sprites/adv_obj/Sanct_Sd.def
 	sprites/adv_obj/UtopiaSn.def
+	sprites/adv_towns/AVCCasCS.def
+	sprites/adv_towns/AVCCasFS.def
+	sprites/adv_towns/AVCCasVS.def
+	sprites/adv_towns/AVCCasXS.def
+	sprites/adv_towns/AVCCasZS.def
+	sprites/adv_towns/AVCInfCS.def
+	sprites/adv_towns/AVCInfFS.def
+	sprites/adv_towns/AVCInfVS.def
+	sprites/adv_towns/AVCInfXS.def
+	sprites/adv_towns/AVCInfZS.def
+	sprites/adv_towns/AVCNecCS.def
+	sprites/adv_towns/AVCNecFS.def
+	sprites/adv_towns/AVCNecVS.def
+	sprites/adv_towns/AVCNecXS.def
+	sprites/adv_towns/AVCNecZS.def
+	sprites/adv_towns/AVCStrCS.def
+	sprites/adv_towns/AVCStrFS.def
+	sprites/adv_towns/AVCStrVS.def
+	sprites/adv_towns/AVCStrXS.def
+	sprites/adv_towns/AVCStrZS.def
+	sprites/adv_towns/AVCTowCG.def
+	sprites/adv_towns/AVCTowFG.def
+	sprites/adv_towns/AVCTowVG.def
+	sprites/adv_towns/AVCTowXG.def
+	sprites/adv_towns/AVCTowZG.def
 	sprites/obstacles/ObBDt1Ug.def
 	sprites/obstacles/ObDtS3Ug.def
 	sprites/obstacles/ObDtS4Ug.def
@@ -140,7 +165,7 @@ set(LOD_FILE "../LodBuild/Landscape.lod")
 
 if(MMARCH)
 	add_custom_command(OUTPUT ${LOD_FILE}
-		COMMAND ${MMARCH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp sprites\\obstacles\\*.def
+		COMMAND ${MMARCH} create Landscape.lod h3lod ..\\LodBuild img\\*.bmp sprites\\adv_obj\\*.def sprites\\adv_towns\\*.def sprites\\obstacles\\*.def
 		DEPENDS ${IMAGE_FILES} ${SPRITE_FILES}
 		WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 	)

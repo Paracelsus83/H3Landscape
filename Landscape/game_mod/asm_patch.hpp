@@ -115,6 +115,11 @@ namespace Asm {
         constexpr explicit SetRegPtr(Reg dstReg, Reg baseReg, int32_t ofs) : RegPtr32Instr(0x8Bu, dstReg, baseReg, ofs) {}
     };
 
+    /// lea dstReg, [baseReg + offset]
+    struct LoadAddress : public RegPtr32Instr {
+        constexpr explicit LoadAddress(Reg dstReg, Reg baseReg, int32_t ofs) : RegPtr32Instr(0x8Du, dstReg, baseReg, ofs) {}
+    };
+
     /// xor dstReg, srcReg
     struct XorReg : public RegRegInstr {
         constexpr explicit XorReg(Reg dstReg, Reg srcReg) : RegRegInstr(0x31u, dstReg, srcReg) {}
