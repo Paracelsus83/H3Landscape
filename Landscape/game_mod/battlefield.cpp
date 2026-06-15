@@ -277,8 +277,16 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     switch (cm->magic_terrain) {
 
     case MAGIC_TERRAIN_INVALID:
-        if (tt == eTownNecropolis && cm->EventCell->GroundSet == eTerrainSnow) {
-            return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
+        if (cm->EventCell->GroundSet == eTerrainSnow) {
+            switch (tt) {
+            case eTownNecropolis:
+                return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
+            case eTownStronghold:
+                if (cm->fortificationLevel == eFortificationFort) {
+                    return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
+                }
+                break;
+            }
         }
         break;
     case MAGIC_TERRAIN_CURSED_GROUND:
@@ -323,6 +331,11 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         if (tt == eTownTower) {
             return underground ?
                 MagicBfUndBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS] : MagicBfBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS];
+        }
+        break;
+    case MAGIC_TERRAIN_CRACKED_ICE:
+        if (tt == eTownNecropolis) {
+            return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
         }
         break;
     default:

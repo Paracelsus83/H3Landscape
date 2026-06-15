@@ -8,6 +8,10 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 ### Game modification
 - Corrected algorithm for selecting the town's appearance on the adventure map:
   - Fixed a bug in determining the town type when the hero is standing at the town gate;
+- Changed algorithm for determining the battlefield background during town sieges:
+  - The original H3 background for the Tower siege [surface battle] or the image `SgTwUgBk.pcx` [underground battle] is used as the background for:
+     - Necropolis with fort/citadel/castle on snow or cracked ice,
+     - Stronghold with fort on snow.
 
 
 ## [0.1.2] - 2026-06-01
