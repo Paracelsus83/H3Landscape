@@ -80,7 +80,7 @@ static const town* __fastcall GetSpriteNameForTown(NewmapCell& cell, char sprite
         return nullptr;
     }
 
-    const town& tw = gpGame->townPool[cell.extraInfo];
+    const town& tw = gpGame->townPool[cell.get_map_extraInfo().extraInfo];
     const TerrainType8 tt = GetTerrainType(gpGame->worldMap, tw);
 
     switch (tw.townType) {

@@ -3,6 +3,13 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.1.3] - 2026-06-15
+
+### Game modification
+- Corrected algorithm for selecting the town's appearance on the adventure map:
+  - Fixed a bug in determining the town type when the hero is standing at the town gate;
+
+
 ## [0.1.2] - 2026-06-01
 
 ### Added game files
