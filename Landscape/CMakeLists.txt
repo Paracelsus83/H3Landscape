@@ -9,6 +9,7 @@ endif()
 set(SOURCE_FILES
 	dllmain.cpp
 	game_mod/adv_map.cpp
+	game_mod/adv_map_town.cpp
 	game_mod/adv_mt.cpp
 	game_mod/battlefield.cpp
 	game_mod/img_loader.cpp

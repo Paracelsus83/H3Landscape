@@ -6,7 +6,11 @@ set(CPPCHECK_LEVEL "reduced" CACHE STRING "Configure how much valueflow analysis
 
 if(NOT CMAKE_CXX_CPPCHECK)
 	cmake_path(CONVERT "$ENV{ProgramFiles}" TO_CMAKE_PATH_LIST PROGRAM_FILES)
-	find_program(CMAKE_CXX_CPPCHECK "cppcheck" PATHS "${PROGRAM_FILES}/Cppcheck")
+	cmake_path(CONVERT "$ENV{ProgramW6432}" TO_CMAKE_PATH_LIST PROGRAM_FILES_W64)
+	find_program(CXX_CPPCHECK "cppcheck" PATHS "${PROGRAM_FILES}/Cppcheck" "${PROGRAM_FILES_W64}/Cppcheck")
+	if(CXX_CPPCHECK)
+		set(CMAKE_CXX_CPPCHECK "${CXX_CPPCHECK}")
+	endif()
 endif()
 
 if(CMAKE_CXX_CPPCHECK)

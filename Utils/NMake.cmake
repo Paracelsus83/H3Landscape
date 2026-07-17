@@ -22,17 +22,32 @@ endif()
 
 if(MSVC_BASE_PATH)
 	if(NOT CMAKE_MAKE_PROGRAM)
-		file(STRINGS "${MSVC_BASE_PATH}/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt" VCTOOLSET_VERSION)
-		find_program(
-			CMAKE_MAKE_PROGRAM
-			"nmake.exe"
-			PATHS "${MSVC_BASE_PATH}/Tools/MSVC/${VCTOOLSET_VERSION}/bin/Hostx64/x86"
-			REQUIRED
-		)
+		if(CMAKE_GENERATOR STREQUAL "NMake Makefiles")
+			file(STRINGS "${MSVC_BASE_PATH}/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt" VCTOOLSET_VERSION)
+			find_program(
+				CMAKE_MAKE_PROGRAM
+				"nmake.exe"
+				PATHS "${MSVC_BASE_PATH}/Tools/MSVC/${VCTOOLSET_VERSION}/bin/Hostx64/x86"
+				REQUIRED
+			)
+		elseif(CMAKE_GENERATOR STREQUAL "Ninja")
+			find_program(
+				CMAKE_MAKE_PROGRAM
+				"ninja"
+				PATHS "${MSVC_BASE_PATH}/../Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja"
+				REQUIRED
+			)
+		endif()
 	endif()
 
-	set(LLVM_BIN_PATH "${MSVC_BASE_PATH}/Tools/Llvm/bin")
-	if(EXISTS "${LLVM_BIN_PATH}")
+	find_path(LLVM_BIN_PATH
+		"."
+		PATHS 
+			"${MSVC_BASE_PATH}/Tools/Llvm/x64/bin"
+			"${MSVC_BASE_PATH}/Tools/Llvm/bin"
+		NO_DEFAULT_PATH
+	)
+	if(LLVM_BIN_PATH)
 		if(NOT EXISTS "${CMAKE_CXX_COMPILER}")
 			if(NOT CMAKE_CXX_COMPILER)
 				# Use the Clang-CL compiler from Ms Visual Studio - if installed
@@ -54,22 +69,10 @@ if(MSVC_BASE_PATH)
 			set(CLANG_TIDY_PATH "${LLVM_BIN_PATH}/clang-tidy.exe")
 			if(EXISTS "${CLANG_TIDY_PATH}")
 				set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-				set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_PATH};-checks='*';-p;.")
+				set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_PATH};--config-file=${CMAKE_CURRENT_LIST_DIR}/ClangTidy.conf;-p;.")
 			endif()
 		endif()
-	endif() # LLVM
-endif()
-
-# If compiler is not G++ (GNU)
-if(NOT CMAKE_CXX_COMPILER MATCHES "[^A-Za-z][Gg][+][+](\.exe)?$")
-	# Use Microsoft Windows SDK v7.1A - if installed
-	set(MS_SDK_PATH "${PROGRAM_FILES_X86}/Microsoft SDKs/Windows/v7.1A")
-	if (EXISTS "${MS_SDK_PATH}")
-		message("-- Windows SDK v7.1A found: ${MS_SDK_PATH}")
-		set(CMAKE_RC_COMPILER "${MS_SDK_PATH}/Bin/RC.exe")
-		include_directories(SYSTEM "${MS_SDK_PATH}/Include")
-		link_directories(BEFORE "${MS_SDK_PATH}/Lib")
-	else()
-		message(WARNING "Microsoft Windows SDK v7.1A not found; It is recommended to install it.")
+	else() # LLVM_BIN_PATH not exist
+		message(WARNING "LLVM Clang compiler not found; It is recommended to install it.")
 	endif()
 endif()

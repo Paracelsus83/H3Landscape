@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Package</OutputType>
     <OutputName>H3Landscape</OutputName>
+    <Platforms>x86;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>..\$(Configuration)</OutputPath>

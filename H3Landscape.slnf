@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "H3Landscape.slnx",
+    "projects": [
+      "Landscape\\Landscape.vcxproj",
+      "Patcher\\Patcher.vcxproj"
+    ]
+  }
+}

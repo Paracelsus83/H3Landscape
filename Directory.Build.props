@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
+	<PropertyGroup>
+		<DefineWindowsSDK_71A>true</DefineWindowsSDK_71A>
+		<LegacySDKDir>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\</LegacySDKDir>
+		<WindowsSDK_71_BasePath Condition="Exists('$(LegacySDKDir)v7.1')">$(LegacySDKDir)v7.1\</WindowsSDK_71_BasePath>
+		<WindowsSDK_71_BasePath Condition="Exists('$(LegacySDKDir)v7.1A')">$(LegacySDKDir)v7.1A\</WindowsSDK_71_BasePath>
+		<WindowsSDK_71_IncPath>$(WindowsSDK_71_BasePath)Include</WindowsSDK_71_IncPath>
+		<WindowsSDK_71_LibPath>$(WindowsSDK_71_BasePath)Lib</WindowsSDK_71_LibPath>
+		<WindowsSDK_71_BinPath>$(WindowsSDK_71_BasePath)Bin</WindowsSDK_71_BinPath>
+	</PropertyGroup>
+	<ItemDefinitionGroup>
+		<ClCompile>
+			<PreprocessorDefinitions>_USING_V110_SDK71_;_WIN32_WINNT=_WIN32_WINNT_WINXP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+		</ClCompile>
+	</ItemDefinitionGroup>
 	<Target Name="GetH3LVersionFromGit" BeforeTargets="PrepareForBuild">
 		<Exec Command="git describe --tags --abbrev=4 --always --dirty" ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
 			<Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
@@ -19,7 +33,7 @@
 		</PropertyGroup>
 		<ItemGroup Condition="'$(VCTargetsPath)' != ''">
 			<ResourceCompile>
-				<PreprocessorDefinitions>H3LANDSCAPE_VERSION=$(H3LVersion);H3L_PROD_VERSION=$(H3LProdVersion),0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+				<PreprocessorDefinitions>H3LANDSCAPE_VERSION=$(H3LVersion);H3L_PROD_VERSION=$(H3LProdVersion),0;%(ResourceCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
 			</ResourceCompile>
 		</ItemGroup>
 	</Target>

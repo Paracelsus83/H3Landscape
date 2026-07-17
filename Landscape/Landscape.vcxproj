@@ -15,13 +15,12 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{9020E824-A738-4B61-ADEE-51E16E3C2EC2}</ProjectGuid>
     <RootNamespace>Landscape</RootNamespace>
-    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
-    <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <VCToolsVersion>14.16.27023</VCToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -42,8 +41,10 @@
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <ExecutablePath>$(SolutionDir)\Utils;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)NH3API;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(SolutionDir)\Utils;$(WindowsSDK_71_BinPath);$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SolutionDir)NH3API</IncludePath>
+    <LibraryPath>$(WindowsSDK_71_LibPath);$(VC_LibraryPath_x86)</LibraryPath>
+    <ExternalIncludePath>$(VC_IncludePath);$(UniversalCRT_IncludePath);$(WindowsSDK_71_IncPath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -60,11 +61,11 @@
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Debug'">
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=_WIN32_WINNT_WINXP;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Release'">
       <DebugInformationFormat>None</DebugInformationFormat>
-      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=_WIN32_WINNT_WINXP;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -198,6 +199,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClInclude Include="game_mod\img_loader.hpp" />
     <ClInclude Include="game_mod\mode.hpp" />
     <ClInclude Include="game_mod\obstacles.hpp" />
+    <ClInclude Include="game_mod\types.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

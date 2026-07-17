@@ -8,11 +8,13 @@ CMakeCache.txt
 install_manifest.txt
 compile_commands.json
 Makefile
-H3LandscapeCMake.sln
+build.ninja
+H3LandscapeCMake.*
 /Win32
 /*.cmake
 /*.filters
 /*.vcxproj
+.ninja*
 *.7z
 *.aps
 *.lib

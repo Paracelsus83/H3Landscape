@@ -40,6 +40,9 @@
     <ClInclude Include="game_mod\obstacles.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\types.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

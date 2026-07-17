@@ -1,0 +1,10 @@
+<Solution>
+	<Configurations>
+		<Platform Name="x86" />
+	</Configurations>
+	<Project Path="Landscape\Landscape.vcxproj" Id="9020E824-A738-4B61-ADEE-51E16E3C2EC2" />
+	<Project Path="Patcher\Patcher.vcxproj" Id="5A6A8A86-0DE5-425F-9F2F-73FBF5DF6585" />
+	<Project Path="Installer\Installer.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0">
+		<Build Project="false" />
+	</Project>
+</Solution>

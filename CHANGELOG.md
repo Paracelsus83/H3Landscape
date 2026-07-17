@@ -3,6 +3,15 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.2.0]
+
+### Build system
+- Updated project files for Visual Studio 2026, version 18.8.0,
+- Clang-CL has been set as the project's default compiler in MSBuild,
+- Added support for Ninja and GNU G++ in `CMakeLists.txt`,
+- Added the `Utils/ClangTidy.conf` file - Clang-Tidy configuration.
+
+
 ## [0.1.3] - 2026-06-15
 
 ### Game modification
@@ -61,7 +70,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ### Added game files
 - New image (.pcx file in `Landscape.lod` archive):
-  - `CmBkDeU.pcx` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.bmp`);
+  - `CmBkDeU.pcx` - new background of a sandy battlefield in the underground (replacement for removed `CmBkDesUg.pcx`);
 - New sprites of adventure map objects (.def file in `Landscape.lod` archive):
   - `Sanct_Sd.def` - Beholders' Sanctuary on land,
   - `UtopiaSn.def` - Dragon Utopia on snow,
@@ -130,6 +139,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 - Changed algorithm for determining the battlefield background:
   - The image `CmBkMCBt.pcx` is used as the background for the battlefield on two boats on magical clouds,
   - The algorithm for selecting the background in objects classified as caves has been unified - it works the same way in SoD, HotA, and WoG,
+  - For battles in a gold or crystal mine:
+    - if the terrain type is grass, snow, swamp or highlands, the terrain type for the battle is changed to “rough” and the `CmBkRghUg.pcx` is used as the battlefield background,
+    - for other types of terrain, an image matching the given terrain in its underground version (`CmBk##Ug.pcx`) is used as the battlefield background;
   - For battles in water objects located on land:
     - Shipwreck uses a background that matches the type of terrain it is located on,
     - Temple of the Sea (considered a cave) uses a background that matches the type of terrain it is located on, except for lava, for which the “dirt” background (`CmBkDrUg.pcx`) is used,
@@ -305,7 +317,7 @@ All notable changes to the **H3Landscape** project will be documented in this fi
   - If the battle takes place in a “subterranean” type field, but not underground, not in a mine, and not in a cave, then the “red rocks” battlefield background is used,
   - If the battle takes place underground, the underground equivalent of the battlefield background (`CmBk##Ug.pcx`) is used,
   - If the battle takes place in a gold or crystal mine:
-    - if the terrain type is grass, snow or swamp, the terrain type for the battle is changed to “dirt” and the CmBkDrUg.pcx is used as the battlefield background,
+    - if the terrain type is grass, snow or swamp, the terrain type for the battle is changed to “dirt” and the `CmBkDrUg.pcx` is used as the battlefield background,
     - for other types of terrain, an image matching the given terrain in its underground version (`CmBk##Ug.pcx`) is used as the battlefield background;
   - If the battle takes place in Behemoth Crag, Cyclops Cave, or Cyclops Stockpile:
     - if the terrain type is grass or snow, the terrain type for the battle is changed to “rough” and the “underground rough” image (`CmBkRghUg.pcx`) is used as the battlefield background,
