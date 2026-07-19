@@ -7,6 +7,8 @@
 #include "mode.hpp"
 
 
+namespace {
+
 enum EMapVersion : uint16_t {
     EXTRA_OBJ   = 0x00,
     MAPVER_ROE  = 0x0E,
@@ -26,8 +28,8 @@ static_assert(sizeof(ObjExtraType) == 4);
 
 struct ObjAlterationInfo {
     EMapVersion version = EXTRA_OBJ;
-    uint8_t height = 0;
-    uint8_t eraHeight = 0;
+    int8_t height = 0;
+    int8_t eraHeight = 0;
     std::string_view imageName;
     std::string_view eraImageName = {};
 };
@@ -115,7 +117,7 @@ static uint16_t __fastcall GetOrCreateTypeId(
     newObjType.Height = (Mode::ERA && altInfo.eraHeight) ? altInfo.eraHeight : altInfo.height;
     newObjType.TerrainMask = exe_bitset<10>(1ULL << terType);
 
-    std::string_view imageName = (Mode::ERA && !altInfo.eraImageName.empty()) ?
+    const std::string_view imageName = (Mode::ERA && !altInfo.eraImageName.empty()) ?
         altInfo.eraImageName : altInfo.imageName;
 
     if (altInfo.version != EXTRA_OBJ) {
@@ -133,12 +135,13 @@ static uint16_t __fastcall GetOrCreateTypeId(
 
 
 template<typename... Args>
-struct TObjectAlterations {
+class TObjectAlterations {
     static constexpr size_t IDX_SIZE = Alt::LAST_ADV_TYPE - Alt::FIRST_ADV_TYPE + 1;
 
     uint8_t altMap[IDX_SIZE][MAX_HOTA_TERRAIN_TYPES] = {};
     const ObjAlterationInfo definition[sizeof...(Args)];
 
+public:
     constexpr explicit TObjectAlterations(Args&&... args) : definition{ args.info... } {
         uint8_t idx = 0;
         for (auto key : { args.key... }) {
@@ -263,8 +266,10 @@ static void __fastcall NewMap_UpdateObjects(NewfullMap& map) {
 
 static CSprite* __fastcall GetSpriteForObject(const exe_string& imageName) {
     if (imageName.size() > 14) {
-        const size_t altNameOffs = strlen(imageName.data()) + 1;
-        if (altNameOffs < imageName.size()) {
+        size_t altNameOffs = 5;
+        for (; altNameOffs < imageName.size() && imageName[altNameOffs] != 0; ++altNameOffs);
+
+        if (++altNameOffs < imageName.size()) {
             CSprite* altSprite = ResourceManager::GetSprite(imageName.data() + altNameOffs);
             if (altSprite) {
                 return altSprite;
@@ -298,7 +303,7 @@ static int __fastcall ReadString(TAbstractFile& infile, exe_string& str) {
         str.clear();
     }
     else {
-        str.resize(strLength);
+        str.resize(strLength, '\0');
         if (infile.read(str.data(), strLength) < strLength) {
             return -1;
         }
@@ -308,7 +313,7 @@ static int __fastcall ReadString(TAbstractFile& infile, exe_string& str) {
 
 
 static int __fastcall WriteString(TAbstractFile& outfile, const exe_string& str) {
-    int strLength = str.size();
+    int strLength = (int)str.size();
     if (outfile.write(&strLength, 2) < 2) {
         return -1;
     }
@@ -319,6 +324,8 @@ static int __fastcall WriteString(TAbstractFile& outfile, const exe_string& str)
     }
     return strLength;
 }
+
+} // namespace
 
 
 void AdvMapPatch(PatcherInstance& p) {

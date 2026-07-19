@@ -7,6 +7,8 @@
 #include "hota_terrain.hpp"
 
 
+namespace {
+
 typedef const char SpriteName[13];
 
 const SpriteName TowerGrassSprites[5] = {
@@ -56,7 +58,7 @@ inline void CopySpriteName(char dest[], const SpriteName& sprName) {
 
 
 static uint32_t GetTownLevel(const town& tw) {
-    uint32_t buildingMask = uint32_t(tw.populationMask);
+    const uint32_t buildingMask = uint32_t(tw.populationMask);
     if (buildingMask & (1 << HALL_CAPITOL_ID)) {
         return 4;
     }
@@ -73,8 +75,8 @@ static uint32_t GetTownLevel(const town& tw) {
 }
 
 
-static const town* __fastcall GetSpriteNameForTown(NewmapCell& cell, char spriteName[]) {
-    if (cell.extraInfo < 0) {
+static const town* __fastcall GetSpriteNameForTown(const NewmapCell& cell, char spriteName[]) {
+    if (int32_t(cell.extraInfo) < 0) {
         // This should not have happened
         CopySpriteName(spriteName, "AVCranx0.def"); // fallback to placeholder sprite
         return nullptr;
@@ -119,6 +121,8 @@ static const town* __fastcall GetSpriteNameForTown(NewmapCell& cell, char sprite
     RETURN_ADDRESS = 0x4C9792;
     return &tw;
 }
+
+} // namespace
 
 
 void AdvMapTownPatch(PatcherInstance& p) {

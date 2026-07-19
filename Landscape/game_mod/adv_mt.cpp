@@ -88,7 +88,7 @@ TerrainType8 __fastcall GetTerrainType(const NewfullMap& map, const town& tw) {
 
 
 void __fastcall MarkMagicTerrain(NewfullMap& map) {
-    for (CObject& obj : map.Objects) {
+    for (const CObject& obj : map.Objects) {
         const CObjectType& objType = map.ObjectTypes[obj.TypeID];
         const TAdventureObjectType advType = objType.Type;
 
@@ -134,7 +134,7 @@ void __fastcall MarkMagicTerrain(NewfullMap& map) {
         if (objType.Width > 2 && objType.Height > 2) { // ellipse
             iniX[0] = iniX[1] + 1;
             endX[0] = endX[1] - 1;
-            --h;
+            --h; // NOLINTNEXTLINE(clang-analyzer-security.ArrayBound)
             iniX[h] = iniX[0];
             endX[h] = endX[0];
         }

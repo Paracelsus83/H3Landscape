@@ -2,6 +2,7 @@
 #include "game_mod/adv_map.hpp"
 #include "game_mod/battlefield.hpp"
 #include "game_mod/img_loader.hpp"
+#include "game_mod/mode.hpp"
 
 
 namespace Mode {
@@ -10,7 +11,7 @@ namespace Mode {
 }
 
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
+extern BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
         Patcher* patcher = GetPatcher();
         if (patcher == nullptr) return FALSE;
