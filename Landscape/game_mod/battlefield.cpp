@@ -1,12 +1,13 @@
 #include <nh3api/core/global.hpp>
+#include <nh3api/core/combat.hpp>
 
 #include "battlefield.hpp"
 #include "asm_helper.h"
 #include "asm_patch.hpp"
 #include "mode.hpp"
-#include "types.hpp"
 #include "hota_terrain.hpp"
 #include "obstacles.hpp"
+#include "types.hpp"
 
 
 namespace Addr { // Function and data addresses inside Heroes3.exe
@@ -32,13 +33,10 @@ namespace Fort { // Addresses inside the function selecting fortification graphi
     constexpr uintptr_t LOOP_JL_ARG = 0x46300E;
 }
 
-namespace PlObst { // Addresses inside the function placing one obstacle on the battlefield
-    constexpr uintptr_t GET_INFO = 0x465C25;
-    constexpr uintptr_t AFTER_GET_INFO = 0x465C2B;
-}
-
 } // namespace Addr
 
+
+namespace {
 
 inline CStrPtr StrAddr(uintptr_t addr) { return reinterpret_cast<CStrPtr>(addr); }
 
@@ -137,6 +135,8 @@ const CStrPtr TownBfUndBackgr[MAX_HOTA_TOWN_TYPES] = {
     /* eTownFactory    */ "SgFaUgBk.pcx",
     /* eTownBulwark    */ "SgBwUgBk.pcx"
 };
+
+} // namespace
 
 
 namespace Combat {
@@ -266,6 +266,12 @@ static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager* cm) {
 }
 
 
+#if defined(_MSC_VER)
+#pragma warning(disable : 4063)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wswitch"
+#endif
+
 static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     const bool underground = cm->map_point.z > 0;
     const TTownType tt = TTownType(cm->combatTown->townType);
@@ -285,6 +291,8 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
                 if (cm->fortificationLevel == eFortificationFort) {
                     return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
                 }
+                break;
+            default:
                 break;
             }
         }
@@ -346,7 +354,7 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
 }
 
 
-static CStrPtr __fastcall GetAreaBfBackgr(combatManager * cm) {
+static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
     if (cm->OnBoats) {
         const bool magicClouds = cm->magic_terrain == MAGIC_TERRAIN_MAGIC_CLOUDS;
         const hero* enemyHero = cm->Heroes[1];
@@ -358,7 +366,7 @@ static CStrPtr __fastcall GetAreaBfBackgr(combatManager * cm) {
         return magicClouds ? MagicCloudBoatBackgr : (cm->map_point.z ? BfUndBackgr[eTerrainWater] : H3BoatDeckBackgr);
     }
 
-    bool underground = cm->map_point.z || (Combat::Cave && !cm->combatTown);
+    const bool underground = cm->map_point.z || (Combat::Cave && !cm->combatTown);
 
     if (cm->magic_terrain >= MAGIC_TERRAIN_COAST) {
         return (underground ? MagicBfUndBackgr : MagicBfBackgr)[cm->magic_terrain];
@@ -465,31 +473,6 @@ static void PatchSetupObstacles_HeroOnBoat(PatcherInstance& p) {
 }
 
 
-ASM_CODE_PATCH Obstacles_GetInfo() {
-/* input:
-    EDI: address of TObstacleInfo object
-    ESI: address of combatManager object
-*/
-    __asm {
-        mov  ecx, dword ptr[ebp - 0x10]    // get combatManager address
-        mov  eax, dword ptr[ecx + 0x13FF0] // get map point
-        test eax, 0x3C000000 // check if underground battle
-        jz End
-        mov  ecx, dword ptr[ebp + 8] // get obstacle ID
-        cmp  ecx, 250
-        jge End
-        mov  cl,  [UndergroundObstaclesMap + ecx]
-        jcxz End
-        lea  eax, [ecx + ecx * 4]
-        lea  edi, [UgObstacleInfos - 20 + eax * 4] // get address of underground obstacle info
-    End:
-        lea  ecx, [ebp - 50h]        // get address of hex_picker
-        mov  dword ptr[ebp + 8], edi // save address of obstacle info
-        jmp  Addr::PlObst::AFTER_GET_INFO
-    }
-}
-
-
 void BattlefieldPatch(PatcherInstance & p) {
     /* Combat Terrain */
     const uintptr_t cmbtTrHookAddr = Mode::HotA ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
@@ -508,8 +491,7 @@ void BattlefieldPatch(PatcherInstance & p) {
 
     /* Obstacles */
     PatchSetupObstacles_HeroOnBoat(p);
-    p.WriteJmp(Addr::PlObst::GET_INFO, uintptr_t(Obstacles_GetInfo));
-    InitializeUndergroundObstacles();
+    InitializeUndergroundObstacles(p);
 }
 
 

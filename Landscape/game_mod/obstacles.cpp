@@ -1,54 +1,53 @@
+#include <nh3api/core/combat.hpp>
+
 #include "obstacles.hpp"
+#include "asm_patch.hpp"
+#include "types.hpp"
 
 
-combatManager::TObstacleInfo UgObstacleInfos[MAX_UG_OBSTALCES] = {
-    { 0, 0, 0, 0,   5, {}, "ObBDt1Ug.def" },
-    { 0, 0, 0, 0,  12, {}, "ObDtS3Ug.def" },
-    { 0, 0, 0, 0,  13, {}, "ObDtS4Ug.def" },
-    { 0, 0, 0, 0,  19, {}, "ObGMs2Ug.def" },
-    { 0, 0, 0, 0,  21, {}, "ObGMs1Ug.def" },
-    { 0, 0, 0, 0,  26, {}, "ObSnRk3U.def" },
-    { 0, 0, 0, 0,  28, {}, "ObSnRk5U.def" },
-    { 0, 0, 0, 0,  29, {}, "ObSnRk6U.def" },
-    { 0, 0, 0, 0,  33, {}, "OBSnCrUg.def" },
-    { 0, 0, 0, 0,  34, {}, "ObSwMsUg.def" },
-};
+namespace {
+
+    struct TObstacleSpriteInfo {
+        const char spriteName[1] = {};
+        uint8_t obstacleId = 0;
+        const char undergndSpriteName[13] = {};
+        CStrPtr surfaceSpriteName = nullptr;
+
+        bool HasOneSpite() const { return spriteName[0] != 0; }
+    };
+
+    constexpr size_t MAX_UG_OBSTALCES = 10;
+
+    std::array<TObstacleSpriteInfo, MAX_UG_OBSTALCES> obstacleSpriteNames = { {
+        { "", 5,  "ObBDt1Ug.def" },
+        { "", 12, "ObDtS3Ug.def" },
+        { "", 13, "ObDtS4Ug.def" },
+        { "", 19, "ObGMs2Ug.def" },
+        { "", 21, "ObGMs1Ug.def" },
+        { "", 26, "ObSnRk3U.def" },
+        { "", 28, "ObSnRk5U.def" },
+        { "", 29, "ObSnRk6U.def" },
+        { "", 33, "OBSnCrUg.def" },
+        { "", 34, "ObSwMsUg.def" },
+    } };
 
 
-const uint8_t UndergroundObstaclesMap[250] = {
-    0,  0,  0,  0,  0,  1,  0,  0,  0,  0,
-    0,  0,  2,  3,  0,  0,  0,  0,  0,  4,
-    0,  5,  0,  0,  0,  0,  6,  0,  7,  8,
-    0,  0,  0,  9, 10,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-};
+    static CSprite* __fastcall GetObstacleSprite(const TObstacleSpriteInfo& spriteInfo) {
+        const CStrPtr spriteName = spriteInfo.HasOneSpite() ?
+            spriteInfo.spriteName : (gpCombatManager->map_point.z) ?
+                spriteInfo.undergndSpriteName : spriteInfo.surfaceSpriteName;
+        return ResourceManager::GetSprite(spriteName);
+    }
+
+} // namespace
 
 
-void InitializeUndergroundObstacles() {
-    constexpr size_t OBST_PARAMS_SIZE = offsetof(combatManager::TObstacleInfo, FileName);
+void InitializeUndergroundObstacles(PatcherInstance& p) {
+    Asm::WritePseudoFastCall(p, 0x465DA0, GetObstacleSprite);
 
-    for (size_t i = 0; i < MAX_UG_OBSTALCES; ++i) {
-        size_t origObsIdx = UgObstacleInfos[i].underlay;
-        memcpy(&UgObstacleInfos[i], &combatManager::ObstacleInfo[origObsIdx], OBST_PARAMS_SIZE);
+    for (TObstacleSpriteInfo& obsSprInfo : obstacleSpriteNames) {
+        const CStrPtr& spriteNameRef = combatManager::ObstacleInfo[obsSprInfo.obstacleId].FileName;
+        obsSprInfo.surfaceSpriteName = spriteNameRef;
+        p.WriteAddressOf(uintptr_t(&spriteNameRef), obsSprInfo);
     }
 }
