@@ -39,7 +39,7 @@ namespace Asm {
         Sequence<RestInstr...> _rest;
 
     public:
-        constexpr Sequence(FirstInstr first, RestInstr... rest) : _instr(first), _rest(rest...) {}
+        constexpr explicit Sequence(FirstInstr first, RestInstr... rest) : _instr(first), _rest(rest...) {}
 
         constexpr size_t Size() const { return sizeof(*this); }
 
@@ -130,6 +130,11 @@ namespace Asm {
         constexpr explicit ClearReg(Reg dstReg) : XorReg(dstReg, dstReg) {}
     };
 
+    /// test reg, reg
+    struct TestReg : public RegRegInstr {
+        constexpr explicit TestReg(Reg reg1, Reg reg2) : RegRegInstr(0x85u, reg1, reg2) {}
+    };
+
     /// test reg, dword ptr [baseReg + offset]
     struct TestRegPtr : public RegPtr32Instr {
         constexpr explicit TestRegPtr(Reg dstReg, Reg baseReg, int32_t ofs) : RegPtr32Instr(0x85u, dstReg, baseReg, ofs) {}
@@ -194,6 +199,18 @@ namespace Asm {
         }
     };
 
+    class CondRelativeJump {
+        [[maybe_unused]] const uint8_t opcode1 = 0x0Fu;
+        [[maybe_unused]] const uint8_t opcode2;
+        [[maybe_unused]] int32_t relAddr;
+    protected:
+        constexpr explicit CondRelativeJump(uint8_t op, uintptr_t targetAddr) : opcode2(op), relAddr(int(targetAddr - sizeof(*this))) {}
+    public:
+        constexpr void UpdateAddr(uintptr_t addr) {
+            relAddr -= int(addr);
+        }
+    };
+
 
     class Jump : public RelativeJump<int32_t> {
     public:
@@ -218,12 +235,20 @@ namespace Asm {
         constexpr explicit JumpIfZero(uintptr_t targetAddr) : RelativeJump<int8_t>(0x74u, targetAddr) {}
     };
 
+    class Jump32IfZero : public CondRelativeJump {
+    public:
+        constexpr explicit Jump32IfZero(uintptr_t targetAddr) : CondRelativeJump(0x84u, targetAddr) {}
+    };
 
     class JumpIfNotZero : public RelativeJump<int8_t> {
     public:
         constexpr explicit JumpIfNotZero(uintptr_t targetAddr) : RelativeJump<int8_t>(0x75u, targetAddr) {}
     };
 
+    class Jump32IfNotZero : public CondRelativeJump {
+    public:
+        constexpr explicit Jump32IfNotZero(uintptr_t targetAddr) : CondRelativeJump(0x85u, targetAddr) {}
+    };
 
     class JumpIfEcxZero : public RelativeJump<int8_t> {
     public:
