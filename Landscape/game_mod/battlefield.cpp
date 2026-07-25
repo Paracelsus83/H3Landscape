@@ -25,14 +25,6 @@ namespace Bg { // Addresses inside the function selecting battlefield background
     constexpr uintptr_t END_OF_FUNC = 0x46435E;
 }
 
-namespace Fort { // Addresses inside the function selecting fortification graphics for the battlefield
-    constexpr uintptr_t IMG_ENTRY = 0x462FC3;
-    constexpr uintptr_t STD_IMG = 0x462FE3;
-    constexpr uintptr_t LOAD_BITMAP = 0x462FF0;
-    constexpr uintptr_t NO_IMAGE = 0x463001;
-    constexpr uintptr_t LOOP_JL_ARG = 0x46300E;
-}
-
 } // namespace Addr
 
 
@@ -144,19 +136,10 @@ namespace Combat {
     static TTerrainType BgTerrain = eTerrainDirt;
 }
 
-namespace Fort {
-
-namespace Item { /* Fortification item IDs */
-    constexpr uint32_t MOAT = combatManager::eWallSectionMoat * 9 + 2;
-    constexpr uint32_t MOAT_LIP = combatManager::eWallSectionMoatLip * 9 + 2;
-}
-
-namespace Img { /* Fortification image file names */
+namespace Fort::Img { /* Fortification image file names */
     static CStrPtr Moat = nullptr;
     static CStrPtr MoatLip = nullptr;
-}
-
-} // namespace Fort
+} // namespace Fort::Img
 
 
 static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
@@ -389,43 +372,36 @@ static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
 }
 
 
-ASM_CODE_PATCH FortSectionImage() {
-/* input
-    EBX: number of wall section * 9
-    EDX: constant - 0
-    ESI: address of combatManager object
-*/
-    __asm {
-        cmp  ebx, Fort::Item::MOAT
-        je   Moat
-        cmp  ebx, Fort::Item::MOAT_LIP
-        je   MoatLip
-        jmp  Addr::Fort::STD_IMG
-    Moat:
-        cmp  dl, [Mode::HotA]
-        jne  MoatImg // if the game is HotA, skip checking RoE/AB.
-        mov  ecx, [gpGame]
-        // Check if the game is in RoE or AB mode
-        cmp  dword ptr[ecx + 0x1F698], 2
-        jge  MoatImg // Jump if iGameType >= Shadow of Death
-        mov  eax, dword ptr[esi + 0x53C8]
-        cmp  byte ptr[eax + 4], TOWN_STRONGHOLD
-        jne  MoatImg // Jump if town type is not Stronghold
-        mov  [Fort::Img::Moat], edx // = nullptr
-        jmp  Addr::Fort::NO_IMAGE // Don't display moat for Stronghold in RoE/AB
-    MoatImg:
-        mov  ecx, [Fort::Img::Moat]
-        jecxz StdImage
-        mov  [Fort::Img::Moat], edx // = nullptr
-        jmp  Addr::Fort::LOAD_BITMAP
-    MoatLip:
-        mov  ecx, [Fort::Img::MoatLip]
-        jecxz StdImage
-        mov  [Fort::Img::MoatLip], edx // = nullptr
-        jmp  Addr::Fort::LOAD_BITMAP
-    StdImage:
-        jmp  Addr::Fort::STD_IMG
+static uint64_t __fastcall SetupFortSprites() {
+    typedef std::array<combatManager::TWallTraits, combatManager::kNumWallSections> ArrayOfWallTraits;
+
+    const int8_t combatTownType = gpCombatManager->combatTown->townType;
+
+    const ArrayOfWallTraits& townWallTraits = (*reinterpret_cast<ArrayOfWallTraits**>(0x462FBA))[combatTownType];
+
+    for (size_t sectNum = 0; sectNum < townWallTraits.size(); ++sectNum) {
+        const auto& bmpNames = townWallTraits[sectNum].filenames;
+        auto& wi = gpCombatManager->wallImages[sectNum];
+
+        switch (sectNum) {
+        case combatManager::eWallSectionMoat:
+            wi[0] = (!bmpNames[0] || (combatTownType == eTownStronghold && gpGame->iGameType < 2)) ?
+                nullptr : ResourceManager::GetBitmap816(Fort::Img::Moat ? Fort::Img::Moat : bmpNames[0]);
+            for (int j = 1; j < 5; ++j) { wi[j] = nullptr; }
+            break;
+        case combatManager::eWallSectionMoatLip:
+            wi[0] = bmpNames[0] ? ResourceManager::GetBitmap816(Fort::Img::MoatLip ? Fort::Img::MoatLip : bmpNames[0]) : nullptr;
+            for (int j = 1; j < 5; ++j) { wi[j] = nullptr; }
+            break;
+        default:
+            for (int j = 0; j < 5; ++j) {
+                const CStrPtr bmpName = bmpNames[j];
+                wi[j] = bmpName ? ResourceManager::GetBitmap816(bmpName) : nullptr;
+            }
+            break;
+        }
     }
+    return 0; // set EDX to 0
 }
 
 
@@ -486,8 +462,7 @@ void BattlefieldPatch(PatcherInstance & p) {
     Asm::WritePseudoFastCall(p, Addr::Bg::AREA_BF_ENTRY, GetAreaBfBackgr, Addr::Bg::END_OF_FUNC);
 
     /* Fortification */
-    p.WriteByte(Addr::Fort::LOOP_JL_ARG, 0xD4u); // change of jump address to Addr::Fort::STD_IMG
-    p.WriteJmp(Addr::Fort::IMG_ENTRY,  uintptr_t(FortSectionImage));
+    Asm::WritePseudoFastCall(p, 0x462F9B, SetupFortSprites, 0x463034);
 
     /* Obstacles */
     PatchSetupObstacles_HeroOnBoat(p);
