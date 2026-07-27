@@ -2,7 +2,7 @@
 
 pushd %~dp0\..
 
-del CMakeCache.txt cmake_install.cmake Makefile build.ninja .ninja* H3LandscapeCMake.sln *.filters *.vcxproj
+del CMakeCache.txt cmake_install.cmake Makefile build.ninja .ninja* compile_commands.json H3LandscapeCMake.sln *.filters *.vcxproj
 del /S /Q CMakeFiles\
 del /S /Q Landscape.build\
 del /S /Q Patcher.build\

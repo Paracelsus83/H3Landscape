@@ -6,7 +6,6 @@
 #include "asm_patch.hpp"
 #include "mode.hpp"
 #include "hota_terrain.hpp"
-#include "obstacles.hpp"
 #include "types.hpp"
 
 
@@ -466,7 +465,6 @@ void BattlefieldPatch(PatcherInstance & p) {
 
     /* Obstacles */
     PatchSetupObstacles_HeroOnBoat(p);
-    InitializeUndergroundObstacles(p);
 }
 
 

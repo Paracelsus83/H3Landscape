@@ -4,8 +4,10 @@ cmake_minimum_required(VERSION 3.20)
 
 set(SOURCE_FILES
 	main.cpp
-	AT4RE_Lib/pefile.hpp
-	AT4RE_Lib/pefile.cpp
+	Win32EXE_Lib/exe_file.hpp
+	Win32EXE_Lib/exe_file.cpp
+	Win32EXE_Lib/min_win.hpp
+	Win32EXE_Lib/rsrc_parser.cpp
 )
 
 set(RESOURCE_FILES

@@ -1,9 +1,14 @@
+#[[
+Copyright (c) 2026 Paracelsus83
+SPDX-License-Identifier: MIT
+]]
+
 cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 if(CMAKE_GENERATOR MATCHES "(Makefiles)|(Ninja)")
-	if(CMAKE_CXX_COMPILER MATCHES "[^A-Za-z][Gg][+][+](\.exe)?$")
+	if(CMAKE_CXX_COMPILER MATCHES "(^|[^A-Za-z])[Gg][+][+](\.exe)?$")
 		# Flags for GNU G++
 		set(CMAKE_CXX_FLAGS_INIT "-march=i686 -mwin32")
 	else()

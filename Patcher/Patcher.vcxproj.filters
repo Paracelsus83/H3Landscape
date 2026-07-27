@@ -8,7 +8,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="AT4RE_Lib">
+    <Filter Include="Win32EXE_Lib">
       <UniqueIdentifier>{44757e44-9dff-4e3f-83aa-dc7e55127fe2}</UniqueIdentifier>
       <Extensions>c;cpp;h;hpp</Extensions>
     </Filter>
@@ -17,8 +17,11 @@
     <ClCompile Include="main.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="AT4RE_Lib/pefile.cpp">
-      <Filter>AT4RE_Lib</Filter>
+    <ClCompile Include="Win32EXE_Lib\exe_file.cpp">
+      <Filter>Win32EXE_Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Win32EXE_Lib\rsrc_parser.cpp">
+      <Filter>Win32EXE_Lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -30,8 +33,11 @@
     <ClInclude Include="resource.h">
       <Filter>resources</Filter>
     </ClInclude>
-    <ClInclude Include="AT4RE_Lib/pefile.hpp">
-      <Filter>AT4RE_Lib</Filter>
+    <ClInclude Include="Win32EXE_Lib\exe_file.hpp">
+      <Filter>Win32EXE_Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32EXE_Lib\min_win.hpp">
+      <Filter>Win32EXE_Lib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

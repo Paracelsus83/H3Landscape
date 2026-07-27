@@ -5,6 +5,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ## [0.2.0]
 
+### Modified components
+- Rewritten `H3L_HotA_Patcher.exe` (generated file `H3HotA_HD_L.exe` has the same size as the source file `H3HotA_HD.exe`).
+
 ### Build system
 - Updated project files for Visual Studio 2026, version 18.8.0,
 - Clang-CL has been set as the project's default compiler in MSBuild,
