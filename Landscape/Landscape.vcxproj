@@ -55,6 +55,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <WarningLevel>Level4</WarningLevel>
@@ -195,10 +196,12 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClInclude Include="game_mod\asm_helper.h" />
     <ClInclude Include="game_mod\asm_patch.hpp" />
     <ClInclude Include="game_mod\battlefield.hpp" />
+    <ClInclude Include="game_mod\bf_creature.hpp" />
     <ClInclude Include="game_mod\hota_terrain.hpp" />
     <ClInclude Include="game_mod\img_loader.hpp" />
     <ClInclude Include="game_mod\mode.hpp" />
     <ClInclude Include="game_mod\obstacles.hpp" />
+    <ClInclude Include="game_mod\pixel_rgb.hpp" />
     <ClInclude Include="game_mod\types.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -208,6 +211,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClCompile Include="game_mod\adv_map_town.cpp" />
     <ClCompile Include="game_mod\adv_mt.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
+    <ClCompile Include="game_mod\bf_creature.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />
     <ClCompile Include="game_mod\obstacles.cpp" />
   </ItemGroup>

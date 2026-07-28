@@ -142,8 +142,8 @@ namespace Asm {
 
     /// push srcReg
     class PushReg : public AbsoluteInstr {
-        [[maybe_unused]] const uint8_t opcode;
     public:
+        [[maybe_unused]] const uint8_t opcode;
         constexpr explicit PushReg(Reg srcReg) : opcode(0x50u | srcReg) {}
     };
 
@@ -297,6 +297,12 @@ inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t insAddr, uintptr_t
 template<typename F, typename ...Args>
 inline void WritePseudoFastCall(PatcherInstance& p, uintptr_t callAddr, F* funcAddr, Args... args) {
     WritePseudoFastCall(p, callAddr, uintptr_t(funcAddr), args...);
+}
+
+
+template<typename F>
+inline void WriteFuncAddress(PatcherInstance& p, uintptr_t addr, F* func) {
+    p.WriteDword(addr, uintptr_t(func) - addr - 4);
 }
 
 

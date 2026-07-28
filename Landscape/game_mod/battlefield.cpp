@@ -4,6 +4,7 @@
 #include "battlefield.hpp"
 #include "asm_helper.h"
 #include "asm_patch.hpp"
+#include "bf_creature.hpp"
 #include "mode.hpp"
 #include "hota_terrain.hpp"
 #include "types.hpp"
@@ -133,7 +134,10 @@ const CStrPtr TownBfUndBackgr[MAX_HOTA_TOWN_TYPES] = {
 namespace Combat {
     static bool Cave = false; // battle is taking place in a cave
     static TTerrainType BgTerrain = eTerrainDirt;
-}
+    bool disableEffectInFort = false;
+    TEffectDef terrainEffect;
+    TEffectDef moatEffect;
+} // namespace Combat
 
 namespace Fort::Img { /* Fortification image file names */
     static CStrPtr Moat = nullptr;
@@ -258,8 +262,36 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     const bool underground = cm->map_point.z > 0;
     const TTownType tt = TTownType(cm->combatTown->townType);
 
-    if (underground && tt == eTownFactory && cm->fortificationLevel >= eFortificationCitadel) {
-        Fort::Img::Moat = "SgFaMoatUg.pcx";
+    Combat::disableEffectInFort = false;
+    Combat::terrainEffect.Reset();
+    Combat::moatEffect.Reset();
+
+    if (cm->bMoatOn) {
+        switch (tt) {
+        case eTownCastle:
+        case eTownConflux:
+        case eTownCove:
+            Combat::moatEffect.upperRow = 253;
+            Combat::moatEffect.pattern = &waterTransp;
+            break;
+        case eTownInferno:
+            Combat::moatEffect.upperRow = 254;
+            Combat::moatEffect.pattern = &fogGradient;
+            Combat::moatEffect.disableShadow = true;
+            break;
+        case eTownDungeon:
+        case eTownFortress:
+            Combat::moatEffect.upperRow = 253;
+            Combat::moatEffect.pattern = &darkWTransp;
+            break;
+        case eTownFactory:
+            if (underground) {
+                Fort::Img::Moat = "SgFaMoatUg.pcx";
+            }
+            break;
+        default:
+            break;
+        }
     }
 
     switch (cm->magic_terrain) {
@@ -282,7 +314,7 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     case MAGIC_TERRAIN_CURSED_GROUND:
         if (tt == eTownTower) break;
 
-        if (tt == eTownDungeon && cm->fortificationLevel >= eFortificationCitadel) {
+        if (cm->bMoatOn && tt == eTownDungeon) {
             Fort::Img::MoatLip = "SgDnCGMlip.pcx";
         }
         if (cm->fortificationLevel == eFortificationFort
@@ -292,12 +324,14 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         break;
     case MAGIC_TERRAIN_EVIL_FOG:
         if (cm->fortificationLevel == eFortificationFort && tt != eTownTower) {
+            Combat::terrainEffect.upperRow = 248;
+            Combat::terrainEffect.pattern = &fogGradient;
             return underground ?
                 MagicBfUndBackgr[MAGIC_TERRAIN_EVIL_FOG] : MagicBfBackgr[MAGIC_TERRAIN_EVIL_FOG];
         }
         break;
     case MAGIC_TERRAIN_CLOVER_FIELD:
-        if (tt == eTownStronghold && cm->fortificationLevel >= eFortificationCitadel) {
+        if (cm->bMoatOn && tt == eTownStronghold) {
             Fort::Img::Moat = "SgCFMoat.pcx";
         }
         if (IsOneOf(tt, eTownCastle, eTownRampart, eTownStronghold, eTownFortress, eTownConflux, eTownCove)) {
@@ -306,11 +340,15 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         break;
     case MAGIC_TERRAIN_FIERY_FIELDS:
         if (tt == eTownInferno) {
+            Combat::disableEffectInFort = true;
+            Combat::terrainEffect.upperRow = 250;
+            Combat::terrainEffect.pattern = &fogGradient;
+            Combat::terrainEffect.disableShadow = true;
             return "SgFFBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_ROCKLANDS:
-        if (tt == eTownDungeon && cm->fortificationLevel >= eFortificationCitadel) {
+        if (cm->bMoatOn && tt == eTownDungeon) {
             Fort::Img::MoatLip = "SgDnRkMlip.pcx";
         }
         if (IsOneOf(tt, eTownCastle, eTownInferno, eTownNecropolis, eTownDungeon, eTownConflux, eTownCove)) {
@@ -319,6 +357,8 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         break;
     case MAGIC_TERRAIN_MAGIC_CLOUDS:
         if (tt == eTownTower) {
+            Combat::terrainEffect.upperRow = 248;
+            Combat::terrainEffect.pattern = &fogGradient;
             return underground ?
                 MagicBfUndBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS] : MagicBfBackgr[MAGIC_TERRAIN_MAGIC_CLOUDS];
         }
@@ -337,6 +377,10 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
 
 
 static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
+    Combat::disableEffectInFort = false;
+    Combat::terrainEffect.Reset();
+    Combat::moatEffect.Reset();
+
     if (cm->OnBoats) {
         const bool magicClouds = cm->magic_terrain == MAGIC_TERRAIN_MAGIC_CLOUDS;
         const hero* enemyHero = cm->Heroes[1];
@@ -351,6 +395,24 @@ static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
     const bool underground = cm->map_point.z || (Combat::Cave && !cm->combatTown);
 
     if (cm->magic_terrain >= MAGIC_TERRAIN_COAST) {
+        switch (cm->magic_terrain) {
+        case MAGIC_TERRAIN_LUCID_POOLS:
+            Combat::terrainEffect.upperRow = 253;
+            Combat::terrainEffect.pattern = &waterTransp;
+            break;
+        case MAGIC_TERRAIN_EVIL_FOG:
+        case MAGIC_TERRAIN_MAGIC_CLOUDS:
+            Combat::terrainEffect.upperRow = 248;
+            Combat::terrainEffect.pattern = &fogGradient;
+            break;
+        case MAGIC_TERRAIN_FIERY_FIELDS:
+            Combat::terrainEffect.upperRow = 250;
+            Combat::terrainEffect.pattern = &fogGradient;
+            Combat::terrainEffect.disableShadow = true;
+            break;
+        default:
+            break;
+        }
         return (underground ? MagicBfUndBackgr : MagicBfBackgr)[cm->magic_terrain];
     }
     if (underground) {
@@ -448,7 +510,7 @@ static void PatchSetupObstacles_HeroOnBoat(PatcherInstance& p) {
 }
 
 
-void BattlefieldPatch(PatcherInstance & p) {
+void BattlefieldPatch(PatcherInstance & p, bool color32bit, int battleY) {
     /* Combat Terrain */
     const uintptr_t cmbtTrHookAddr = Mode::HotA ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
     Asm::WritePseudoFastCall(p, cmbtTrHookAddr, GetCombatTerrain, Asm::ESI, Addr::CT::END_OF_FUNC);
@@ -465,6 +527,32 @@ void BattlefieldPatch(PatcherInstance & p) {
 
     /* Obstacles */
     PatchSetupObstacles_HeroOnBoat(p);
+
+    if (!color32bit || Mode::ERA) return;
+
+	if (battleY < 0) battleY = 0;
+    BfScreen::firstRow = battleY;
+	BfScreen::lastRow = battleY + 556;
+
+    /* Creatures */
+    if (Mode::HotA) {
+        const HMODULE hotaDll = GetModuleHandle("HotA.dll");
+        if (hotaDll) {
+            const uintptr_t drawCrFuncAddr = uintptr_t(hotaDll) + 0x7178B;
+
+            // check whether the address of CSprite::DrawCreature is located at [drawCrFuncAddr]
+            if (*reinterpret_cast<uintptr_t*>(drawCrFuncAddr) == 0x47B680) {
+                // replace the address of the creature drawing function
+                p.WriteDword(drawCrFuncAddr, uintptr_t(HotA_Sprite_DrawCreature));
+            }
+        }
+    }
+    else {
+        // Hook for combatManager::DrawCreature
+        Asm::WriteFuncAddress(p, 0x43E251, SoD_CM_DrawCreature);
+        // replace the `frame` param (EDX) with the `army` object (EBX)
+        p.WriteByte(0x43E247, Asm::PushReg(Asm::EBX).opcode);
+    }
 }
 
 

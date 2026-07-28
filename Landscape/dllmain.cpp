@@ -25,10 +25,14 @@ static void LateInit() {
     Mode::HotA = gameVersion & HD_HOTA;
     Mode::ERA = gameVersion & HD_ERA;
 
+    const int colorMode = getHDModVariable<int>(patcher, "HD.Option.ColorMode");
+    const bool color32bit = colorMode >= 4 && colorMode != 6;
+    const int battleY = getHDModVariable<int>(patcher, "HD.Battle.Y");
+
     assert(patcherInstance);
     AdvMapPatch(*patcherInstance);
     AdvMapTownPatch(*patcherInstance);
-    BattlefieldPatch(*patcherInstance);
+    BattlefieldPatch(*patcherInstance, color32bit, battleY);
 }
 
 

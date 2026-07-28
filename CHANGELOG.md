@@ -3,7 +3,14 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
-## [0.2.0]
+## [0.2.0] - 2026-08-01
+
+### Game modification
+- {for SoD/HotA in 32bit graphics mode} Improved procedure for displaying creatures on the battlefield, with an additional visual effects:
+  - Effect of having your legs submerged in water when the creature is in a water-filled moat or in lucid pools,
+  - Partial fog effect on the legs (gradient) when the creature is on magic clouds or evil fog,
+  - No shadows and a flame gradient on the legs when the creature is on fiery fields or in the inferno moat,
+  - Air and storm elementals are semi-transparent.
 
 ### Modified components
 - Rewritten `H3L_HotA_Patcher.exe` (generated file `H3HotA_HD_L.exe` has the same size as the source file `H3HotA_HD.exe`).

@@ -12,6 +12,7 @@ set(SOURCE_FILES
 	game_mod/adv_map_town.cpp
 	game_mod/adv_mt.cpp
 	game_mod/battlefield.cpp
+	game_mod/bf_creature.cpp
 	game_mod/img_loader.cpp
 	game_mod/obstacles.cpp
 )
@@ -22,9 +23,12 @@ set(HEADER_FILES
 	game_mod/asm_helper.h
 	game_mod/asm_patch.hpp
 	game_mod/battlefield.hpp
+	game_mod/bf_creature.hpp
 	game_mod/hota_terrain.hpp
 	game_mod/img_loader.hpp
 	game_mod/mode.hpp
+	game_mod/obstacles.hpp
+	game_mod/pixel_rgb.hpp
 	game_mod/types.hpp
 )
 
