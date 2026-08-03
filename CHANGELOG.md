@@ -3,6 +3,17 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.2.1]
+
+### Game modification
+- Changed algorithm for determining the battlefield background:
+  - The following WoG objects have been classified as caves, which affects the choice of battlefield terrain and background image in these objects:
+    - Behemoth Tomb - battlefield terrain and background selection is the same as for Behemoth Crag,
+    - Vast Cavern - if the terrain type is grass, snow or highlands, the terrain type for the battle is changed to “dirt” and the “underground dirt” image (`CmBkDrUg.pcx`) is used as the battlefield background, for other types of terrain, an image matching the given terrain in its underground version is used.
+    - Grotto, Palace of Martial Spirit, Citadel of Pacification, Monastery of Magicans, Library of Legends - battlefield background selection is the same as for Cyclops Stockpile,
+    - Snow-covered Grotto - if the terrain type is grass or highlands, the “underground dirt” image (`CmBkDrUg.pcx`) is used as the battlefield background, for other types of terrain, an image matching the given terrain in its underground version is used.
+
+
 ## [0.2.0] - 2026-08-01
 
 ### Game modification

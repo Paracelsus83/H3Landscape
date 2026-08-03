@@ -128,6 +128,9 @@ const CStrPtr TownBfUndBackgr[MAX_HOTA_TOWN_TYPES] = {
     /* eTownBulwark    */ "SgBwUgBk.pcx"
 };
 
+constexpr int16_t GENERATOR_BEHEMOTH_GHOST = 86;
+constexpr int16_t GENERATOR_GORYNYCH = 91;
+
 } // namespace
 
 
@@ -147,15 +150,27 @@ namespace Fort::Img { /* Fortification image file names */
 
 static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
     Combat::Cave = false;
-    Combat::BgTerrain = TTerrainType(cm->EventCell->GroundSet);
+    const NewmapCell& cell = *cm->EventCell;
+    Combat::BgTerrain = TTerrainType(cell.GroundSet);
 
     switch (cm->Heroes[0]->type) {
 
     case OBJECT_CREATURE_BANK:
-        if (IsOneOf(cm->EventCell->objectIndex, BANK_CYCLOPS_STOCKPILE, BANK_HOTA_PIRATE_CAVERN, BANK_HOTA_SPIT)) {
+        if (IsOneOf(cell.objectIndex,
+            BANK_CYCLOPS_STOCKPILE,
+            BANK_WOG_SNOW_GROTTO,
+            BANK_WOG_PALACE_OF_MARTIAL_SPIRIT,
+            BANK_WOG_CITADEL_OF_PACIFICATION,
+            BANK_WOG_MONASTERY_OF_MAGICIANS,
+            BANK_WOG_LIBRARY_OF_LEGENDS,
+            BANK_WOG_GROTTO,
+            BANK_HOTA_PIRATE_CAVERN,
+            BANK_HOTA_SPIT
+        )) {
             Combat::Cave = true;
             const TTerrainType realTerrain = Combat::BgTerrain;
-            if (IsOneOf(realTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
+            if (realTerrain == eTerrainGrass || realTerrain == eTerrainHighlands
+                || (realTerrain == eTerrainSnow && cell.objectIndex != BANK_WOG_SNOW_GROTTO)) {
                 // If terrain type is Grass, Snow or Highlands, use the Dirt background
                 Combat::BgTerrain = eTerrainDirt;
             }
@@ -164,17 +179,24 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
         break;
 
     case OBJECT_CREATURE_GENERATOR1:
-        if (IsOneOf(cm->EventCell->objectIndex, GENERATOR_BEHEMOTH, GENERATOR_CYCLOPS)) {
+        if (IsOneOf(cell.objectIndex, GENERATOR_BEHEMOTH, GENERATOR_CYCLOPS, GENERATOR_BEHEMOTH_GHOST)) {
             Combat::Cave = true;
             if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
                 Combat::BgTerrain = eTerrainRough;
             }
-            break;
+            return Combat::BgTerrain;
+        }
+        if (Mode::ERA && cell.objectIndex == GENERATOR_GORYNYCH) {
+            Combat::Cave = true;
+            if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainSnow, eTerrainHighlands)) {
+                Combat::BgTerrain = eTerrainDirt;
+            }
+            return Combat::BgTerrain;
         }
         break;
 
     case OBJECT_MINE:
-        switch (cm->EventCell->objectIndex) {
+        switch (cell.objectIndex) {
         case ABANDONED:
             Combat::Cave = true;
             Combat::BgTerrain = eTerrainSubterranean;
@@ -198,7 +220,7 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
         break;
     }
 
-    if (!Combat::Cave && cm->EventCell->IsBeachBorder
+    if (!Combat::Cave && cell.IsBeachBorder
         && (Combat::BgTerrain != eTerrainSubterranean || cm->map_point.z == 0)) {
         cm->magic_terrain = MAGIC_TERRAIN_COAST;
         Combat::BgTerrain = eTerrainSand;
