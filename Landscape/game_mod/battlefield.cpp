@@ -321,13 +321,13 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     case MAGIC_TERRAIN_INVALID:
         if (cm->EventCell->GroundSet == eTerrainSnow) {
             switch (tt) {
+            case eTownStronghold:
+                if (cm->bMoatOn) {
+                    Fort::Img::Moat = "SgStMoTr.pcx";
+                }
+                [[fallthrough]];
             case eTownNecropolis:
                 return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
-            case eTownStronghold:
-                if (cm->fortificationLevel == eFortificationFort) {
-                    return underground ? TownBfUndBackgr[eTownTower] : TownBfBackgr[eTownTower];
-                }
-                break;
             default:
                 break;
             }
@@ -354,7 +354,7 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         break;
     case MAGIC_TERRAIN_CLOVER_FIELD:
         if (cm->bMoatOn && tt == eTownStronghold) {
-            Fort::Img::Moat = "SgCFMoat.pcx";
+            Fort::Img::Moat = "SgStMoTr.pcx";
         }
         if (IsOneOf(tt, eTownCastle, eTownRampart, eTownStronghold, eTownFortress, eTownConflux, eTownCove)) {
             return underground ? "SgCFUgBk.pcx" : "SgCFBack.pcx";
@@ -370,10 +370,19 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         }
         break;
     case MAGIC_TERRAIN_ROCKLANDS:
-        if (cm->bMoatOn && tt == eTownDungeon) {
-            Fort::Img::MoatLip = "SgDnRkMlip.pcx";
+        if (cm->bMoatOn) {
+            switch (tt) {
+            case eTownDungeon:
+                Fort::Img::MoatLip = "SgDnRkMlip.pcx";
+                break;
+            case eTownStronghold:
+                Fort::Img::Moat = "SgStMoTr.pcx";
+                break;
+            default:
+                break;
+            }
         }
-        if (IsOneOf(tt, eTownCastle, eTownInferno, eTownNecropolis, eTownDungeon, eTownConflux, eTownCove)) {
+        if (IsOneOf(tt, eTownCastle, eTownInferno, eTownNecropolis, eTownDungeon, eTownStronghold, eTownConflux, eTownCove)) {
             return underground ? "SgRkUgBk.pcx" : "SgRkBack.pcx";
         }
         break;

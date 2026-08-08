@@ -66,7 +66,6 @@ set(IMAGE_FILES
 	img/CmBkWlUg.bmp
 	img/SgBwUgBk.bmp
 	img/SgCFBack.bmp
-	img/SgCFMoat.bmp
 	img/SgCFUgBk.bmp
 	img/SgCsUgBk.bmp
 	img/SgCurBack.bmp
@@ -84,6 +83,7 @@ set(IMAGE_FILES
 	img/SgRkBack.bmp
 	img/SgRkUgBk.bmp
 	img/SgRmUgBk.bmp
+	img/SgStMoTr.bmp
 	img/SgStUgBk.bmp
 	img/SgTwUgBk.bmp
 )

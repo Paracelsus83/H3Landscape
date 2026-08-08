@@ -5,8 +5,18 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ## [0.2.1]
 
+### Added game files
+- New image:
+  - `SgStMoTr.pcx` (replacement for removed `SgCFMoat.pcx`) - Stronghold moat for terrain types other than rough and cursed ground.
+
 ### Game modification
 - Changed algorithm for determining the battlefield background:
+  - During sieges of Stronghold with a fort, citadel, or castle:
+    - Depending on the type of terrain, the following battlefield backgrounds are used:
+      - on clover field - `SgCFBack.pcx` [surface], `SgCFUgBk.pcx` [underground],
+      - on rockland - `SgRkBack.pcx` [surface], `SgRkUgBk.pcx` [underground],
+      - on snow - the original H3 background for the Tower siege [surface], `SgTwUgBk.pcx` [underground];
+    - On the aforementioned terrains, the `SgStMoTr.pcx` is used a moat image;
   - The following WoG objects have been classified as caves, which affects the choice of battlefield terrain and background image in these objects:
     - Behemoth Tomb - battlefield terrain and background selection is the same as for Behemoth Crag,
     - Vast Cavern - if the terrain type is grass, snow or highlands, the terrain type for the battle is changed to “dirt” and the “underground dirt” image (`CmBkDrUg.pcx`) is used as the battlefield background, for other types of terrain, an image matching the given terrain in its underground version is used.
