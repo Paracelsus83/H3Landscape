@@ -10,6 +10,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
   - `SgStMoTr.pcx` (replacement for removed `SgCFMoat.pcx`) - Stronghold moat for terrain types other than rough and cursed ground.
 
 ### Game modification
+- Improved procedure for displaying creatures on the battlefield:
+  - The additional visual effects introduced in version 0.2.0 also work in HotA 1.8.1 and ERA, provided the `HD.NewTrue32` option is enabled,
+  - Reduced transparency of air and storm elementals - alpha = 75%;
 - Changed algorithm for determining the battlefield background:
   - During sieges of Stronghold with a fort, citadel, or castle:
     - Depending on the type of terrain, the following battlefield backgrounds are used:

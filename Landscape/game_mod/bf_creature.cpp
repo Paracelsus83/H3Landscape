@@ -15,6 +15,7 @@ namespace BfScreen {
 }
 
 constexpr int PIXEL_SIZE = sizeof(color32_t);
+using Palette32 = std::array<Pixel32, 256>;
 
 const TEffectPattern fogGradient = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
 const TEffectPattern airGradient = { 3, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
@@ -25,22 +26,22 @@ const TEffectPattern darkWTransp = { 4, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 7, 8, 8, 8
 template<int ALPHA, int ALPHA_H, bool SHADOW, bool hasEffect>
 inline static char* DrawFrameRLE_S(
     char* __restrict screenDest, int screenPitch, int firstRow, int endOfRows,
-    const CSpriteFrame* __restrict frameData, ptrdiff_t iterDirection,
-    const Pixel32* __restrict pal32, Pixel32 highlightColor,
+    const CSpriteFrame& __restrict frameData, ptrdiff_t iterDirection,
+    const Palette32& __restrict pal32, Pixel32 highlightColor,
     [[ maybe_unused ]] const TEffectPattern* __restrict effectPattern = nullptr
 )
 {
     #define REPEAT_CONT(_oper) \
         for (; count > 0; --count, dst += iterDirection) { reinterpret_cast<Pixel32*>(dst)->_oper; } continue
 
-    const uint32_t* lineOffsets = reinterpret_cast<const uint32_t*>(frameData->map) + firstRow;
+    const uint32_t* lineOffsets = reinterpret_cast<const uint32_t*>(frameData.map) + firstRow;
     const int numOfRows = endOfRows - firstRow;
 
     for (int i = 0; i < numOfRows; ++i, screenDest += screenPitch) {
-        const uint8_t* input = frameData->map + lineOffsets[i];
+        const uint8_t* input = frameData.map + lineOffsets[i];
         char* dst = screenDest;
 
-        for (int j = frameData->CroppedWidth; j > 0; ) {
+        for (int j = frameData.CroppedWidth; j > 0; ) {
             const uint8_t code = *input++;
             int count = *input++ + 1;
             j -= count;
@@ -125,11 +126,11 @@ inline static char* DrawFrameRLE_S(
 
 
 template<int ALPHA, int ALPHA_H, bool HAS_EFFECT, class... Args>
-inline static char* DrawFrameRLE(bool disableShadow, Args... args) {
+inline static char* DrawFrameRLE(bool disableShadow, Args&&... args) {
     if (disableShadow) {
-        return DrawFrameRLE_S<ALPHA, ALPHA_H, false, HAS_EFFECT>(args...);
+        return DrawFrameRLE_S<ALPHA, ALPHA_H, false, HAS_EFFECT>(std::forward<Args>(args)...);
     }
-    return DrawFrameRLE_S<ALPHA, ALPHA_H, true, HAS_EFFECT>(args...);
+    return DrawFrameRLE_S<ALPHA, ALPHA_H, true, HAS_EFFECT>(std::forward<Args>(args)...);
 }
 
 
@@ -180,8 +181,8 @@ static void DrawCreatureFrameRLE(
     char* __restrict screenDest,
     int screenX, int screenY,
     int screenPitch,
-    const CSpriteFrame* __restrict frameData,
-    const Pixel32* __restrict pal32,
+    const CSpriteFrame& __restrict frameData,
+    const Palette32& __restrict pal32,
     bool horizFlip,
     bool corpse,
     color16_t hColor
@@ -189,8 +190,8 @@ static void DrawCreatureFrameRLE(
 {
     const TEffectDef effect = gpCombatManager->fortificationLevel ? GetFortEffect(rArmy) : Combat::terrainEffect;
 
-	int offsetY = screenY + frameData->CroppedY;
-    int frameHeight = frameData->CroppedHeight;
+    int offsetY = screenY + frameData.CroppedY;
+    int frameHeight = frameData.CroppedHeight;
 
 	const int bottomMargin = BfScreen::lastRow - offsetY - frameHeight;
     if (bottomMargin < 0) {
@@ -206,7 +207,7 @@ static void DrawCreatureFrameRLE(
     }
 
     screenDest += offsetY * screenPitch;
-    screenDest += PIXEL_SIZE * (screenX + (horizFlip ? (frameData->Width - frameData->CroppedX - 1) : frameData->CroppedX));
+    screenDest += PIXEL_SIZE * (screenX + (horizFlip ? (frameData.Width - frameData.CroppedX - 1) : frameData.CroppedX));
 
     const ptrdiff_t iterDirection = horizFlip ? -PIXEL_SIZE : PIXEL_SIZE;
 
@@ -219,14 +220,14 @@ static void DrawCreatureFrameRLE(
             frameData, iterDirection, pal32, highlightColor);
     }
     else {
-        const int regularRows = std::min(frameHeight, effect.upperRow - frameData->CroppedY);
+        const int regularRows = std::min(frameHeight, effect.upperRow - frameData.CroppedY);
 
         if (solid) {
             screenDest = DrawFrameRLE<16, 16, false>(effect.disableShadow, screenDest, screenPitch, firstFrameRow, regularRows,
                 frameData, iterDirection, pal32, highlightColor);
         }
         else {
-            screenDest = DrawFrameRLE<10, 16, false>(effect.disableShadow, screenDest, screenPitch, firstFrameRow, regularRows,
+            screenDest = DrawFrameRLE<12, 16, false>(effect.disableShadow, screenDest, screenPitch, firstFrameRow, regularRows,
                 frameData, iterDirection, pal32, highlightColor);
         }
 
@@ -242,8 +243,8 @@ static void DrawCreatureFrameRLE(
 }
 
 
-inline static const Pixel32* GetRGBPalette(const CSprite& sprite) {
-    return reinterpret_cast<const Pixel32*>(reinterpret_cast<const HD::Palette*>(sprite.p16)->pal32);
+inline static const Palette32& GetRGBPalette(const CSprite& sprite) {
+    return *reinterpret_cast<const Palette32*>(reinterpret_cast<const HD::Palette*>(sprite.p16)->pal32);
 }
 
 
@@ -263,25 +264,26 @@ void __fastcall HotA_Sprite_DrawCreature(
     color16_t hColor)
 {
     const CSequence* seq = sprite.s[seqNum];
-    const CSpriteFrame* frameData = seq->f[frameNum];
+    const CSpriteFrame& frameData = *seq->f[frameNum];
 
-    if (frameData->EncodingMethod != eEncodeGeneralRLE) {
+    if (frameData.EncodingMethod != eEncodeGeneralRLE) {
         sprite.DrawCreature(seqNum, frameNum, sx, sy, sw, sh,
             screenMap, x, y, screenWidth, screenHeight, screenPitch, horizFlip, hColor);
     }
-
-    DrawCreatureFrameRLE(
-        *reinterpret_cast<army*>(PARAM32_STACK[16]),
-        screenMap,
-        x - sx,
-        y - sy,
-        screenPitch,
-        frameData,
-        GetRGBPalette(sprite),
-        horizFlip,
-        (seqNum == 5) && (frameNum == seq->numFrames -1),
-        hColor
-    );
+    else {
+        DrawCreatureFrameRLE(
+            *reinterpret_cast<army*>(PARAM32_STACK[16]),
+            screenMap,
+            x - sx,
+            y - sy,
+            screenPitch,
+            frameData,
+            GetRGBPalette(sprite),
+            horizFlip,
+            (seqNum == 5) && (frameNum == seq->numFrames - 1),
+            hColor
+        );
+    }
 }
 
 
@@ -315,9 +317,9 @@ int __fastcall SoD_CM_DrawCreature(
     }
 
     const CSequence* seq = sprite->s[seqNum];
-    const CSpriteFrame* frameData = seq->f[frameNum];
+    const CSpriteFrame& frameData = *seq->f[frameNum];
 
-    if (frameData->EncodingMethod != eEncodeGeneralRLE) {
+    if (frameData.EncodingMethod != eEncodeGeneralRLE) {
         return 1;
     }
 

@@ -1,4 +1,4 @@
 #pragma once
 
 
-void BattlefieldPatch(class PatcherInstance&, bool color32bit, int battleY);
+void BattlefieldPatch(class PatcherInstance&, bool color32bit, unsigned int battleY);

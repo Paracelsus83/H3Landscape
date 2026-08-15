@@ -20,19 +20,24 @@ namespace {
 }
 
 
+inline static uint32_t getVar(const char name[]) {
+    const Variable* const v = patcher->VarFind(name);
+	return (v == nullptr) ? 0 : v->GetValue();
+}
+
+
 static void LateInit() {
     const HD_game_version gameVersion = getHDModEXEVersion(patcher);
     Mode::HotA = gameVersion & HD_HOTA;
     Mode::ERA = gameVersion & HD_ERA;
 
-    const int colorMode = getHDModVariable<int>(patcher, "HD.Option.ColorMode");
-    const bool color32bit = colorMode >= 4 && colorMode != 6;
-    const int battleY = getHDModVariable<int>(patcher, "HD.Battle.Y");
+    const uint32_t colorMode = getVar("HD.Option.ColorMode");
+    const bool color32bit = colorMode >= 4 && colorMode != 6 && (!Mode::ERA || getVar("HD.NewTrue32"));
 
     assert(patcherInstance);
     AdvMapPatch(*patcherInstance);
     AdvMapTownPatch(*patcherInstance);
-    BattlefieldPatch(*patcherInstance, color32bit, battleY);
+    BattlefieldPatch(*patcherInstance, color32bit, getVar("HD.Battle.Y"));
 }
 
 
@@ -43,11 +48,15 @@ extern "C" __declspec(dllexport) int H3L_Init() {
 
 
 extern BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
+    static const char pluginName[] = "HD.Plugin.Landscape";
+
     if (fdwReason == DLL_PROCESS_ATTACH) {
         patcher = GetPatcher();
         if (patcher == nullptr) return FALSE;
 
-        patcherInstance = patcher->CreateInstance("HD.Plugin.Landscape");
+        if (patcher->GetInstance(pluginName)) return FALSE;
+
+        patcherInstance = patcher->CreateInstance(pluginName);
         if (patcherInstance == nullptr) return FALSE;
 
         ImgLoaderPatch(*patcherInstance, hModule);

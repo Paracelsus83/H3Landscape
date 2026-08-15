@@ -541,7 +541,7 @@ static void PatchSetupObstacles_HeroOnBoat(PatcherInstance& p) {
 }
 
 
-void BattlefieldPatch(PatcherInstance & p, bool color32bit, int battleY) {
+void BattlefieldPatch(PatcherInstance & p, bool color32bit, uint32_t battleY) {
     /* Combat Terrain */
     const uintptr_t cmbtTrHookAddr = Mode::HotA ? Addr::CT::ENTRY_HOTA : Addr::CT::ENTRY;
     Asm::WritePseudoFastCall(p, cmbtTrHookAddr, GetCombatTerrain, Asm::ESI, Addr::CT::END_OF_FUNC);
@@ -559,17 +559,16 @@ void BattlefieldPatch(PatcherInstance & p, bool color32bit, int battleY) {
     /* Obstacles */
     PatchSetupObstacles_HeroOnBoat(p);
 
-    if (!color32bit || Mode::ERA) return;
+    if (!color32bit) return;
 
-	if (battleY < 0) battleY = 0;
-    BfScreen::firstRow = battleY;
-	BfScreen::lastRow = battleY + 556;
+    BfScreen::firstRow = (battleY > 3720) ? 0 : static_cast<int>(battleY);
+    BfScreen::lastRow = BfScreen::firstRow + 556;
 
     /* Creatures */
     if (Mode::HotA) {
         const HMODULE hotaDll = GetModuleHandle("HotA.dll");
         if (hotaDll) {
-            const uintptr_t drawCrFuncAddr = uintptr_t(hotaDll) + 0x7178B;
+            const uintptr_t drawCrFuncAddr = uintptr_t(hotaDll) + 0x801EB;
 
             // check whether the address of CSprite::DrawCreature is located at [drawCrFuncAddr]
             if (*reinterpret_cast<uintptr_t*>(drawCrFuncAddr) == 0x47B680) {
