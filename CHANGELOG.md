@@ -10,6 +10,9 @@ All notable changes to the **H3Landscape** project will be documented in this fi
   - `SgStMoTr.pcx` (replacement for removed `SgCFMoat.pcx`) - Stronghold moat for terrain types other than rough and cursed ground.
 
 ### Game modification
+- Improved and fixed algorithm for selecting town's appearance on the adventure map:
+  - In ERA, with the "WoG Graphics Fix Lite" mod enabled, the available graphics for forts and citadels are used (like in HotA),
+  - The game save uses original sprite names so that, if the game is loaded without the H3Landscape plugin active, the towns appear as they do in the original game;
 - Improved procedure for displaying creatures on the battlefield:
   - The additional visual effects introduced in version 0.2.0 also work in HotA 1.8.1 and ERA, provided the `HD.NewTrue32` option is enabled,
   - Reduced transparency of air and storm elementals - alpha = 75%;

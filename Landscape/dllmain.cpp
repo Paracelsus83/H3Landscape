@@ -6,12 +6,14 @@
 #include "game_mod/battlefield.hpp"
 #include "game_mod/img_loader.hpp"
 #include "game_mod/obstacles.hpp"
+#include "game_mod/era_vfs.hpp"
 #include "game_mod/mode.hpp"
 
 
 namespace Mode {
     bool HotA = false;
     bool ERA = false;
+    bool WogFix = false;
 }
 
 namespace {
@@ -30,6 +32,9 @@ static void LateInit() {
     const HD_game_version gameVersion = getHDModEXEVersion(patcher);
     Mode::HotA = gameVersion & HD_HOTA;
     Mode::ERA = gameVersion & HD_ERA;
+    if (Mode::ERA) {
+		Mode::WogFix = EraVfs::IsModActive("WoG Fix Lite");
+    }
 
     const uint32_t colorMode = getVar("HD.Option.ColorMode");
     const bool color32bit = colorMode >= 4 && colorMode != 6 && (!Mode::ERA || getVar("HD.NewTrue32"));

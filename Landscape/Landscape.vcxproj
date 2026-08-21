@@ -48,7 +48,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalOptions>/Zc:__cplusplus /Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -61,10 +60,12 @@
       <WarningLevel>Level4</WarningLevel>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Debug'">
+      <AdditionalOptions>/Zc:__cplusplus /Zc:threadSafeInit- /clang:-fno-limit-debug-info %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Condition="'$(Configuration)'=='Release'">
+      <AdditionalOptions>/Zc:__cplusplus /Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>_HAS_EXCEPTIONS=0;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
@@ -197,6 +198,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClInclude Include="game_mod\asm_patch.hpp" />
     <ClInclude Include="game_mod\battlefield.hpp" />
     <ClInclude Include="game_mod\bf_creature.hpp" />
+    <ClInclude Include="game_mod\era_vfs.hpp" />
     <ClInclude Include="game_mod\hota_terrain.hpp" />
     <ClInclude Include="game_mod\img_loader.hpp" />
     <ClInclude Include="game_mod\mode.hpp" />
@@ -212,6 +214,7 @@ copy "..\LodBuild\$(TargetName).lod" "$(AddonInstallationPath)\"
     <ClCompile Include="game_mod\adv_mt.cpp" />
     <ClCompile Include="game_mod\battlefield.cpp" />
     <ClCompile Include="game_mod\bf_creature.cpp" />
+    <ClCompile Include="game_mod\era_vfs.cpp" />
     <ClCompile Include="game_mod\img_loader.cpp" />
     <ClCompile Include="game_mod\obstacles.cpp" />
   </ItemGroup>

@@ -31,6 +31,9 @@
     <ClInclude Include="game_mod\bf_creature.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
+    <ClInclude Include="game_mod\era_vfs.hpp">
+      <Filter>game_mod</Filter>
+    </ClInclude>
     <ClInclude Include="game_mod\hota_terrain.hpp">
       <Filter>game_mod</Filter>
     </ClInclude>
@@ -67,6 +70,9 @@
       <Filter>game_mod</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\bf_creature.cpp">
+      <Filter>game_mod</Filter>
+    </ClCompile>
+    <ClCompile Include="game_mod\era_vfs.cpp">
       <Filter>game_mod</Filter>
     </ClCompile>
     <ClCompile Include="game_mod\img_loader.cpp">
