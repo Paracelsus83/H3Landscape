@@ -1,9 +1,9 @@
 # H3Landscape
 Plugin for the [HoMM3 HD+](https://sites.google.com/site/heroes3hd/) (Heroes of Might & Magic III patch)
 
-Compatible with HoMM3 Complete edition, [Horn of the Abyss](https://h3hota.com/en/documentation) 1.8.0 and [ERA 3](https://heroes3wog.net/era-3/)
+Compatible with HoMM3 Complete edition, [Horn of the Abyss](https://h3hota.com/en/documentation) 1.8.1 and [ERA 3](https://heroes3wog.net/era-3/)
 
-![](Installer/H3L_Logo.png)
+![Logo](EraMod/H3L_Logo.png)
 
 ## About
 

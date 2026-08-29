@@ -50,11 +50,11 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "compatible with Horn of the Abyss 1.8.0"
+            VALUE "Comments", "compatible with Horn of the Abyss 1.8.1"
             VALUE "CompanyName", "Paracelsus83"
             VALUE "FileDescription", "Tool for installing H3Landscape in Heroes 3 HotA"
             VALUE "InternalName", "H3L_HotA_Patcher"
-            VALUE "LegalCopyright", "(C) 2025 Paracelsus83, MIT licensed"
+            VALUE "LegalCopyright", "© 2025 Paracelsus83, MIT licensed"
             VALUE "OriginalFilename", "H3L_HotA_Patcher.exe"
             VALUE "ProductName", "H3Landscape HotA Patcher"
             VALUE "ProductVersion", STR(H3LANDSCAPE_VERSION)

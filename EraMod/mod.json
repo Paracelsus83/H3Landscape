@@ -1,0 +1,18 @@
+{
+	"caption": {
+		"en_US": "H3Landscape"
+	},
+	"description": {
+		"full": {
+			"en_US": "Descr_en.md"
+		}
+	},
+	"author": "Paracelsus83",
+	"category": "graphics",
+	"mod_version" : "0.2.1",
+	"homepage": "https://github.com/Paracelsus83/H3Landscape/wiki",
+	"support": "https://www.nexusmods.com/heroesofmightandmagiciii/mods/39",
+	"icon": {
+		"file": "H3L_Icon.png"
+	}
+}

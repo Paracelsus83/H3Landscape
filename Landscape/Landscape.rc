@@ -51,11 +51,11 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "compatible with HoMM3 Complete, ERA 3 and Horn of the Abyss 1.8.0"
+            VALUE "Comments", "compatible with HoMM3 Complete, ERA 3 and Horn of the Abyss 1.8.1"
             VALUE "CompanyName", "Paracelsus83"
             VALUE "FileDescription", "Addon for HoMM3 SoD/HotA"
             VALUE "InternalName", "HD.Plugin.Landscape"
-            VALUE "LegalCopyright", "(C) 2025 Paracelsus83, MIT licensed"
+            VALUE "LegalCopyright", "© 2025 Paracelsus83, MIT licensed"
             VALUE "OriginalFilename", "Landscape.dll"
             VALUE "ProductName", "H3Landscape"
             VALUE "ProductVersion", STR(H3LANDSCAPE_VERSION)
