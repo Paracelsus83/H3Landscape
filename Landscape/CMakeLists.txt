@@ -110,6 +110,10 @@ set(SPRITE_FILES
 	sprites/adv_towns/AVCCasVS.def
 	sprites/adv_towns/AVCCasXS.def
 	sprites/adv_towns/AVCCasZS.def
+	sprites/adv_towns/AVCForCS.def
+	sprites/adv_towns/AVCForFS.def
+	sprites/adv_towns/AVCForXS.def
+	sprites/adv_towns/AVCForZS.def
 	sprites/adv_towns/AVCInfCS.def
 	sprites/adv_towns/AVCInfFS.def
 	sprites/adv_towns/AVCInfVS.def

@@ -32,6 +32,7 @@ const TownSpriteNameSet castleSnowSprites     = { "casVS", "casFS", "casCS", "ca
 const TownSpriteNameSet infernoSnowSprites    = { "infVS", "infFS", "infCS", "infXS", "infZS" };
 const TownSpriteNameSet necropolisSnowSprites = { "necVS", "necFS", "necCS", "necXS", "necZS" };
 const TownSpriteNameSet strongholdSnowSprites = { "strVS", "strFS", "strCS", "strXS", "strZS" };
+const TownSpriteNameSet fortressSnowSprites   = { "ftrt0", "forFS", "forCS", "forXS", "forZS" };
 
 const std::array<TownSpriteNameSet*, MAX_HOTA_TOWN_TYPES> snowTownSprites = { {
     &castleSnowSprites,
@@ -41,7 +42,7 @@ const std::array<TownSpriteNameSet*, MAX_HOTA_TOWN_TYPES> snowTownSprites = { {
     &necropolisSnowSprites,
     nullptr,
     &strongholdSnowSprites,
-    nullptr,
+    &fortressSnowSprites,
     nullptr,
     nullptr,
     nullptr,

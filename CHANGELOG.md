@@ -5,7 +5,16 @@ All notable changes to the **H3Landscape** project will be documented in this fi
 
 ## [0.2.2] - 2026-09-01
 
+### Added game files
+- New sprites for the snow-covered Fortress on the adventure map:
+  - `AVCForFS.def` - fort,
+  - `AVCForCS.def` - citadel,
+  - `AVCForXS.def` - castle,
+  - `AVCForZS.def` - capitol;
+
 ### Game modification
+- Updated algorithm for selecting the town's appearance on the adventure map:
+  - For the Fortress located on a snow, snowy versions of sprites are used;
 - Corrected procedure for selecting moat image during a siege (bugfix).
 
 
