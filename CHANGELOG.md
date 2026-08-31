@@ -3,6 +3,12 @@
 All notable changes to the **H3Landscape** project will be documented in this file.
 
 
+## [0.2.2] - 2026-09-01
+
+### Game modification
+- Corrected procedure for selecting moat image during a siege (bugfix).
+
+
 ## [0.2.1] - 2026-08-30
 
 ### Added game files

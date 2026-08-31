@@ -148,12 +148,12 @@ namespace Fort::Img { /* Fortification image file names */
 } // namespace Fort::Img
 
 
-static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
+static TTerrainType __fastcall GetCombatTerrain(combatManager& cm) {
     Combat::Cave = false;
-    const NewmapCell& cell = *cm->EventCell;
+    const NewmapCell& cell = *cm.EventCell;
     Combat::BgTerrain = TTerrainType(cell.GroundSet);
 
-    switch (cm->Heroes[0]->type) {
+    switch (cm.Heroes[0]->type) {
 
     case OBJECT_CREATURE_BANK:
         if (IsOneOf(cell.objectIndex,
@@ -221,8 +221,8 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
     }
 
     if (!Combat::Cave && cell.IsBeachBorder
-        && (Combat::BgTerrain != eTerrainSubterranean || cm->map_point.z == 0)) {
-        cm->magic_terrain = MAGIC_TERRAIN_COAST;
+        && (Combat::BgTerrain != eTerrainSubterranean || cm.map_point.z == 0)) {
+        cm.magic_terrain = MAGIC_TERRAIN_COAST;
         Combat::BgTerrain = eTerrainSand;
     }
 
@@ -230,18 +230,18 @@ static TTerrainType __fastcall GetCombatTerrain(combatManager* cm) {
 }
 
 
-static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager* cm) {
+static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager& cm) {
     Combat::Cave = false;
-    Combat::BgTerrain = TTerrainType(cm->EventCell->GroundSet);
+    Combat::BgTerrain = TTerrainType(cm.EventCell->GroundSet);
 
     if (Combat::BgTerrain == eTerrainWater) {
-        cm->OnBoats = true;
+        cm.OnBoats = true;
     }
     else {
-        switch (cm->Heroes[0]->type) {
+        switch (cm.Heroes[0]->type) {
 
         case OBJECT_CREATURE_BANK:
-            switch (cm->EventCell->objectIndex) {
+            switch (cm.EventCell->objectIndex) {
             case BANK_HOTA_BEHOLDERS_SANCTUARY:
                 Combat::Cave = true;
                 if (IsOneOf(Combat::BgTerrain, eTerrainGrass, eTerrainHighlands)) {
@@ -261,7 +261,7 @@ static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager* cm) {
             break;
 
         case OBJECT_DERELICT_SHIP:
-            cm->OnBoats = true;
+            cm.OnBoats = true;
             Combat::BgTerrain = eTerrainWater;
             break;
 
@@ -280,15 +280,17 @@ static TTerrainType __fastcall GetCombatTerrainWaterObj(combatManager* cm) {
 #pragma GCC diagnostic ignored "-Wswitch"
 #endif
 
-static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
-    const bool underground = cm->map_point.z > 0;
-    const TTownType tt = TTownType(cm->combatTown->townType);
+static CStrPtr __fastcall GetFortBfBackgr(const combatManager& cm) {
+    const bool underground = cm.map_point.z > 0;
+    const TTownType tt = TTownType(cm.combatTown->townType);
 
+    Fort::Img::Moat = nullptr;
+    Fort::Img::MoatLip = nullptr;
     Combat::disableEffectInFort = false;
     Combat::terrainEffect.Reset();
     Combat::moatEffect.Reset();
 
-    if (cm->bMoatOn) {
+    if (cm.bMoatOn) {
         switch (tt) {
         case eTownCastle:
         case eTownConflux:
@@ -316,13 +318,13 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         }
     }
 
-    switch (cm->magic_terrain) {
+    switch (cm.magic_terrain) {
 
     case MAGIC_TERRAIN_INVALID:
-        if (cm->EventCell->GroundSet == eTerrainSnow) {
+        if (cm.EventCell->GroundSet == eTerrainSnow) {
             switch (tt) {
             case eTownStronghold:
-                if (cm->bMoatOn) {
+                if (cm.bMoatOn) {
                     Fort::Img::Moat = "SgStMoTr.pcx";
                 }
                 [[fallthrough]];
@@ -336,16 +338,16 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
     case MAGIC_TERRAIN_CURSED_GROUND:
         if (tt == eTownTower) break;
 
-        if (cm->bMoatOn && tt == eTownDungeon) {
+        if (cm.bMoatOn && tt == eTownDungeon) {
             Fort::Img::MoatLip = "SgDnCGMlip.pcx";
         }
-        if (cm->fortificationLevel == eFortificationFort
+        if (cm.fortificationLevel == eFortificationFort
             || IsOneOf(tt, eTownNecropolis, eTownDungeon, eTownStronghold, eTownConflux)) {
             return underground ? TownBfUndBackgr[eTownStronghold] : "SgCurBack.pcx";
         }
         break;
     case MAGIC_TERRAIN_EVIL_FOG:
-        if (cm->fortificationLevel == eFortificationFort && tt != eTownTower) {
+        if (cm.fortificationLevel == eFortificationFort && tt != eTownTower) {
             Combat::terrainEffect.upperRow = 248;
             Combat::terrainEffect.pattern = &fogGradient;
             return underground ?
@@ -353,7 +355,7 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         }
         break;
     case MAGIC_TERRAIN_CLOVER_FIELD:
-        if (cm->bMoatOn && tt == eTownStronghold) {
+        if (cm.bMoatOn && tt == eTownStronghold) {
             Fort::Img::Moat = "SgStMoTr.pcx";
         }
         if (IsOneOf(tt, eTownCastle, eTownRampart, eTownStronghold, eTownFortress, eTownConflux, eTownCove)) {
@@ -370,7 +372,7 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
         }
         break;
     case MAGIC_TERRAIN_ROCKLANDS:
-        if (cm->bMoatOn) {
+        if (cm.bMoatOn) {
             switch (tt) {
             case eTownDungeon:
                 Fort::Img::MoatLip = "SgDnRkMlip.pcx";
@@ -407,26 +409,26 @@ static CStrPtr __fastcall GetFortBfBackgr(combatManager* cm) {
 }
 
 
-static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
+static CStrPtr __fastcall GetAreaBfBackgr(const combatManager& cm) {
     Combat::disableEffectInFort = false;
     Combat::terrainEffect.Reset();
     Combat::moatEffect.Reset();
 
-    if (cm->OnBoats) {
-        const bool magicClouds = cm->magic_terrain == MAGIC_TERRAIN_MAGIC_CLOUDS;
-        const hero* enemyHero = cm->Heroes[1];
+    if (cm.OnBoats) {
+        const bool magicClouds = cm.magic_terrain == MAGIC_TERRAIN_MAGIC_CLOUDS;
+        const hero* enemyHero = cm.Heroes[1];
 
         if (enemyHero && (enemyHero->flags & HF_ISINBOAT)) {
             return magicClouds ? "CmBkMCBt.pcx" : H3TwoBoatsBackgr; // Set background for battle between two boats
         }
         /* Set background for battle on one boat */
-        return magicClouds ? MagicCloudBoatBackgr : (cm->map_point.z ? BfUndBackgr[eTerrainWater] : H3BoatDeckBackgr);
+        return magicClouds ? MagicCloudBoatBackgr : (cm.map_point.z ? BfUndBackgr[eTerrainWater] : H3BoatDeckBackgr);
     }
 
-    const bool underground = cm->map_point.z || (Combat::Cave && !cm->combatTown);
+    const bool underground = cm.map_point.z || (Combat::Cave && !cm.combatTown);
 
-    if (cm->magic_terrain >= MAGIC_TERRAIN_COAST) {
-        switch (cm->magic_terrain) {
+    if (cm.magic_terrain >= MAGIC_TERRAIN_COAST) {
+        switch (cm.magic_terrain) {
         case MAGIC_TERRAIN_LUCID_POOLS:
             Combat::terrainEffect.upperRow = 253;
             Combat::terrainEffect.pattern = &waterTransp;
@@ -444,18 +446,18 @@ static CStrPtr __fastcall GetAreaBfBackgr(combatManager* cm) {
         default:
             break;
         }
-        return (underground ? MagicBfUndBackgr : MagicBfBackgr)[cm->magic_terrain];
+        return (underground ? MagicBfUndBackgr : MagicBfBackgr)[cm.magic_terrain];
     }
     if (underground) {
-        if (cm->combatTown) {
-            Combat::BgTerrain = cm->combatTerrain;
+        if (cm.combatTown) {
+            Combat::BgTerrain = cm.combatTerrain;
         }
-        if (Combat::BgTerrain == eTerrainSubterranean && cm->EventCell->IsBeachBorder) {
+        if (Combat::BgTerrain == eTerrainSubterranean && cm.EventCell->IsBeachBorder) {
             return UndergrLakeBfBackgr; // Set the battlefield background to Underground Lake
         }
         return BfUndBackgr[Combat::BgTerrain];
     }
-    if (cm->combatTerrain == eTerrainSubterranean) {
+    if (cm.combatTerrain == eTerrainSubterranean) {
         return RedRocksBackgr; // Set the battlefield background to Red Rocks
     }
 
