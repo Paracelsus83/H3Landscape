@@ -4,7 +4,8 @@ This modification adapts the appearance of map objects and battlefields to match
 
 ## Main features
 - [Modifying battlefield backgrounds](https://github.com/Paracelsus83/H3Landscape/wiki/Battlefield-backgrounds)
-- [Modifying obstacles on battlefields](https://github.com/Paracelsus83/H3Landscape/wiki/Obstacles-on-battlefield)
+- [Visual adjustments for battlefield obstacles in the underworld](https://github.com/Paracelsus83/H3Landscape/wiki/Obstacles-on-battlefield)
+- [Displaying creatures on the battlefield, with an additional visual effects](https://github.com/Paracelsus83/H3Landscape/wiki/Battlefield-visual-effects)
 - [Modifying the appearance of objects on the map](https://github.com/Paracelsus83/H3Landscape/wiki/Adventure-map-objects)
 
 ## Links
